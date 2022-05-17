@@ -1,10 +1,10 @@
 Game!!
 
-## DAY May DAY TIME - TIME
-**WHO:**
+## Monday May 16 7:30 - 9:00PM
+**WHO:** Eli
 
-**WHAT:**
+**WHAT:** Writing most of level.h and level.c, along with various convenience changes to other files.
 
-**BUGS:**
+**BUGS:** Didn't test -> no bugs
 
-**RESOURCES USED:**
+**RESOURCES USED:** None

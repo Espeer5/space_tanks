@@ -17,6 +17,11 @@ typedef struct list list_t;
 typedef void (*free_func_t)(void *);
 
 /**
+ * A function that can be called on list elements to copy their resources.
+ */
+typedef void* (*copy_func_t)(void *);
+
+/**
  * Allocates memory for a new list with space for the given number of elements.
  * The list is initially empty.
  * Asserts that the required memory was allocated.
@@ -91,5 +96,9 @@ void *dequeue(list_t *list);
  * @param idx the index at which to add the shape
  */
 void add_at(list_t *list, void *object, size_t idx);
+
+list_t *list_copy(list_t *list, copy_func_t copier);
+
+list_t *list_merge(list_t *list1, list_t *list2, copy_funct_t copier);
 
 #endif // #ifndef __LIST_H__
