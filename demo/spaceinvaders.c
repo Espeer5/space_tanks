@@ -10,9 +10,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "background.h"
 const size_t shape_steps = 200;
-const double XMAX = 1200;
-const double YMAX = 750;
+const double XMAX = 1500;
+const double YMAX = 1000;
 const double UFO_MASS = 2;
 const rgb_color_t UFO_COLOR = {1, 0, 0};
 const size_t UFO_COLUMNS = 8;
@@ -59,7 +60,9 @@ const double UFO_WIDTH_SPACING = 70;
 const double UFO_HEIGHT = 60;
 const double ENEMY_FIRE_RATE_RAND_MAX = 1000;
 const double ENEMY_FIRE_RATE_CONTROL =
-    50; // Lower number to fire less frequety, higher to fire more frequenctly
+    50; // Lower number to fire less frequently, higher to fire more frequenctly
+const size_t NUM_BACK_STARS = 50;
+
 
 typedef struct state {
   scene_t *scene;
@@ -297,6 +300,7 @@ state_t *emscripten_init() {
   state_t *state = malloc(sizeof(state_t));
   assert(state != NULL);
   state->scene = scene_init();
+  generate_back_stars(state -> scene, NUM_BACK_STARS, XMAX, YMAX);
   state->loops = 0;
   create_ship(state);
   create_enemies(state);

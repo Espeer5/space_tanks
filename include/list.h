@@ -99,6 +99,6 @@ void add_at(list_t *list, void *object, size_t idx);
 
 list_t *list_copy(list_t *list, copy_func_t copier);
 
-list_t *list_merge(list_t *list1, list_t *list2, copy_funct_t copier);
+list_t *list_merge(list_t *list1, list_t *list2, copy_func_t copier);
 
 #endif // #ifndef __LIST_H__

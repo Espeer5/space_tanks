@@ -3,6 +3,7 @@
 
 #include "body.h"
 #include "list.h"
+#include "background.h"
 
 /**
  * A collection of bodies and force creators.
@@ -27,7 +28,7 @@ typedef void (*force_creator_t)(void *aux);
  * @param nforces the maximum number of forces that will be in the scene
  * @return the new scene
  */
-scene_t *scene_init_fixed_size(size_t nbodies, size_t nforces)
+scene_t *scene_init_fixed_size(size_t nbodies, size_t nforces);
 
 /**
  * Allocates memory for an empty scene.
@@ -37,6 +38,31 @@ scene_t *scene_init_fixed_size(size_t nbodies, size_t nforces)
  * @return the new scene
  */
 scene_t *scene_init(void);
+
+/**
+ * @brief Returns the number of background graphic objects in the scene
+ * 
+ * @param scene 
+ * @return size_t 
+ */
+size_t background_objs(scene_t *scene);
+
+/**
+ * @brief Returns the background graphic of the given index
+ * 
+ * @param scene 
+ * @param index 
+ * @return list_t* 
+ */
+background_obj_t *scene_get_background(scene_t *scene, size_t index);
+
+/**
+ * @brief Adds the polygon and color given to the background of the scene
+ * 
+ * @param polygon 
+ * @param color 
+ */
+void scene_add_background(scene_t *scene, list_t *polygon, rgb_color_t color);
 
 /**
  * Releases memory allocated for a given scene
@@ -110,6 +136,16 @@ void scene_add_bodies_force_creator(scene_t *scene, force_creator_t forcer,
                                     free_func_t freer);
 
 void scene_tick_forces(scene_t *scene);
+
+/**
+ * @brief Generates a set of randomly shaped and sized background stars in a scene
+ * 
+ * @param scene 
+ * @param num_stars 
+ * @param XMAX 
+ * @param YMAX 
+ */
+void generate_back_stars(scene_t *scene, size_t num_stars, double XMAX, double YMAX);
 
 void scene_tick_after_forces(scene_t *scene, double dt);
 /**

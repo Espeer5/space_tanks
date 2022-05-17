@@ -7,7 +7,7 @@
 #include <stdlib.h>
 #include <time.h>
 
-const char WINDOW_TITLE[] = "CS 3";
+const char WINDOW_TITLE[] = "BLOW THINGS UP HERE";
 const int WINDOW_WIDTH = 1000;
 const int WINDOW_HEIGHT = 500;
 const double MS_PER_S = 1e3;
@@ -151,7 +151,7 @@ bool sdl_is_done(state_t *state) {
 }
 
 void sdl_clear(void) {
-  SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+  SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
   SDL_RenderClear(renderer);
 }
 
@@ -205,12 +205,15 @@ void sdl_show(void) {
 
 void sdl_render_scene(scene_t *scene) {
   sdl_clear();
+  for(size_t j = 0; j < background_objs(scene); j++) {
+    background_obj_t *obj = scene_get_background(scene, j);
+    sdl_draw_polygon(obj -> polygon, obj -> color);
+  }
   size_t body_count = scene_bodies(scene);
   for (size_t i = 0; i < body_count; i++) {
     body_t *body = scene_get_body(scene, i);
     list_t *shape = body_get_shape(body);
     sdl_draw_polygon(shape, body_get_color(body));
-    // list_free(shape);
   }
   sdl_show();
 }
