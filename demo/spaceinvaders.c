@@ -263,6 +263,19 @@ void key_handle(char key, key_event_type_t type, double held_time,
   }
 }
 
+void mouse_handle(char button, key_event_type_t type, double held_time, state_t *state) {
+  if (type == KEY_PRESSED) {
+    switch(button) {
+      case 0:
+        add_ship_projectile(
+          vec_add(body_get_centroid(scene_get_body(state->scene, 0)),
+                  (vector_t){0, PROJECTILE_OFFSET}),
+          state);
+      break;
+    }
+  }
+}
+
 void check_enemy_height(state_t *state) {
   if (strcmp(body_get_info(scene_get_body(state->scene, 0)), "SHIP")) {
     exit(0);
@@ -308,6 +321,7 @@ state_t *emscripten_init() {
 }
 
 void emscripten_main(state_t *state) {
+  sdl_on_click(mouse_handle);
   sdl_on_key(key_handle);
   state->loops += 1;
   if (gen_rand(0, ENEMY_FIRE_RATE_RAND_MAX) < ENEMY_FIRE_RATE_CONTROL &&

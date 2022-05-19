@@ -33,6 +33,11 @@ SDL_Renderer *renderer;
  */
 key_handler_t key_handler = NULL;
 /**
+ * @brief The mouse handler, or NULL if none has been configured
+ * 
+ */
+mouse_handler_t mouse_handler = NULL;
+/**
  * SDL's timestamp when a key was last pressed or released.
  * Used to mesasure how long a key has been held.
  */
@@ -125,6 +130,25 @@ bool sdl_is_done(state_t *state) {
     case SDL_QUIT:
       free(event);
       return true;
+    case SDL_MOUSEBUTTONDOWN:
+    case SDL_MOUSEBUTTONUP:
+    if(mouse_handler == NULL)
+      break;
+    uint32_t button_timestamp = event->key.timestamp;
+      if (!event->key.repeat) {
+        key_start_timestamp = button_timestamp;
+      }
+    char button;
+    double button_held_time = (button_timestamp - key_start_timestamp) / MS_PER_S;
+    key_event_type_t button_type = event->type == SDL_MOUSEBUTTONDOWN ? KEY_PRESSED : KEY_RELEASED;
+    if(event -> type == SDL_BUTTON_LEFT) {
+        button = 0;
+    }
+    if(event -> type == SDL_BUTTON_RIGHT) {
+        button = 1;
+    }
+    mouse_handler(button, button_type, button_held_time, state);
+    break;
     case SDL_KEYDOWN:
     case SDL_KEYUP:
       // Skip the keypress if no handler is configured
@@ -219,6 +243,8 @@ void sdl_render_scene(scene_t *scene) {
 }
 
 void sdl_on_key(key_handler_t handler) { key_handler = handler; }
+
+void sdl_on_click(mouse_handler_t handler) { mouse_handler = handler; }
 
 double time_since_last_tick(void) {
   clock_t now = clock();
