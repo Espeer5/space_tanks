@@ -10,6 +10,7 @@ typedef struct scene {
   list_t *auxes;
   list_t *aux_freers;
   list_t *body_lists;
+  list_t *background;
 } scene_t;
 
 typedef void (*force_creator_t)(void *aux);
@@ -28,6 +29,8 @@ scene_t *scene_init_fixed_size(size_t nbodies, size_t nforces) {
   assert(new_scene->aux_freers != NULL);
   new_scene->body_lists = list_init(nforces, (void *)list_free);
   assert(new_scene->body_lists != NULL);
+  new_scene -> background = list_init(5, (void *)background_obj_free);
+  assert(new_scene -> background != NULL);
   return new_scene;
 }
 
@@ -61,14 +64,28 @@ void scene_free(scene_t *scene) {
   if (scene->body_lists != NULL) {
     list_free(scene->body_lists);
   }
+  if(scene -> background != NULL) {
+    list_free(scene -> background);
+  }
   free(scene);
 }
 
 size_t scene_bodies(scene_t *scene) { return list_size(scene->bodies); }
 
+size_t background_objs(scene_t *scene) { return list_size(scene -> background); };
+
 body_t *scene_get_body(scene_t *scene, size_t index) {
   void *to_ret = list_get(scene->bodies, index);
   return to_ret;
+}
+
+background_obj_t *scene_get_background(scene_t *scene, size_t index) {
+  void *to_ret = list_get(scene -> background, index);
+  return to_ret;
+}
+
+void scene_add_background(scene_t *scene, list_t *polygon, rgb_color_t color) {
+  list_add(scene -> background, obj_init(polygon, color));
 }
 
 void scene_add_body(scene_t *scene, body_t *body) {
@@ -114,6 +131,12 @@ void scene_tick_forces(scene_t *scene) {
         break;
       }
     }
+  }
+}
+
+void generate_back_stars(scene_t *scene, size_t num_stars, double XMAX, double YMAX) {
+  for(size_t i = 0; i < num_stars; i++) {
+    scene_add_background(scene, star_init(6, (vector_t){gen_rand(5, XMAX), gen_rand(5, YMAX)}, gen_rand(5, 15)), (rgb_color_t) {1, 1, gen_rand(4, 10) / 10});
   }
 }
 
