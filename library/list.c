@@ -15,6 +15,8 @@ typedef struct list {
 
 typedef void (*free_funct_t)(void *object);
 
+typedef void* (*copy_funct_t)(void *object);
+
 list_t *list_init(size_t initial_size, free_func_t freer) {
   list_t *new_list = malloc(sizeof(list_t));
   assert(new_list != NULL);
@@ -102,3 +104,23 @@ void list_free(list_t *list) {
 size_t list_size(list_t *list) { return list->size; }
 
 size_t get_capacity(list_t *list) { return list->capacity; }
+/*
+list_t *list_copy(list_t *list, copy_func_t copier) {
+  list_t *new_list = list_init(list_size(list), list->freer);
+  for (size_t i = 0; i < list_size(list); i++) {
+    list_add(new_list, copier(list_get(list, i)));
+  }
+  return new_list;
+}*/
+
+list_t *list_merge(list_t *list1, list_t *list2, copy_func_t copier) {
+  assert(list1->freer == list2->freer); //otherwise this makes no sense
+  list_t *new_list = list_init(list_size(list1) + list_size(list2), list1->freer);
+  for (size_t i = 0; i < list_size(list1); i++) {
+    list_add(new_list, copier(list_get(list1, i)));
+  }
+  for (size_t i = 0; i < list_size(list2); i++) {
+    list_add(new_list, copier(list_get(list2, i)));
+  }
+  return new_list;
+}

@@ -1,10 +1,10 @@
 # List of demo programs
-DEMOS = bounce gravity pacman nbodies damping spaceinvaders  pegs breakout
+DEMOS = test_level #bounce gravity pacman nbodies damping spaceinvaders  pegs breakout test_level
 # List of C files in "libraries" that we provide
 STAFF_LIBS = test_util sdl_wrapper
 # List of C files in "libraries" that you will write.
 # This also defines the order in which the tests are run.
-STUDENT_LIBS = list vector polygon utils body scene forces collision
+STUDENT_LIBS = list vector polygon utils body scene forces collision mystring level
 
 # find <dir> is the command to find files in a directory
 # ! -name .gitignore tells find to ignore the .gitignore
@@ -51,7 +51,7 @@ CFLAGS += -Iinclude $(shell sdl2-config --cflags) -Wall -g -fno-omit-frame-point
 # -g enables DWARF support, for debugging purposes
 # -gsource-map --source-map-base http://localhost:8000/bin/ creates a source map from the C file for debugging
 EMCC = emcc
-EMCC_FLAGS = -s EXIT_RUNTIME=1 -s ALLOW_MEMORY_GROWTH=1 -s INITIAL_MEMORY=655360000 -s USE_SDL=2 -s USE_SDL_GFX=2 -s USE_SDL_IMAGE=2 -s SDL2_IMAGE_FORMATS='["png"]' -s USE_SDL_TTF=2 -s USE_SDL_MIXER=2 -s ASSERTIONS=1 -O2 -g -gsource-map --source-map-base http://labradoodle.caltech.edu:$(shell cs3-port)/bin/
+EMCC_FLAGS = -s EXIT_RUNTIME=1 -s ALLOW_MEMORY_GROWTH=1 -s INITIAL_MEMORY=655360000 -s USE_SDL=2 -s USE_SDL_GFX=2 -s USE_SDL_IMAGE=2 -s SDL2_IMAGE_FORMATS='["png"]' -s USE_SDL_TTF=2 -s USE_SDL_MIXER=2 -s ASSERTIONS=1 -O2 -g -gsource-map --source-map-base http://labradoodle.caltech.edu:$(shell cs3-port)/bin/ --preload-file levels --use-preload-plugins
 
 # Compiler flag that links the program with the math library
 LIB_MATH = -lm

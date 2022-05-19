@@ -14,20 +14,25 @@ typedef struct scene {
 
 typedef void (*force_creator_t)(void *aux);
 
-scene_t *scene_init(void) {
+
+scene_t *scene_init_fixed_size(size_t nbodies, size_t nforces) {
   scene_t *new_scene = malloc(sizeof(scene_t));
   assert(new_scene != NULL);
-  new_scene->bodies = list_init(5, (void *)body_free);
+  new_scene->bodies = list_init(nbodies, (void *)body_free);
   assert(new_scene->bodies != NULL);
-  new_scene->force_creators = list_init(5, NULL);
+  new_scene->force_creators = list_init(nforces, NULL);
   assert(new_scene->force_creators != NULL);
-  new_scene->auxes = list_init(5, NULL);
+  new_scene->auxes = list_init(nforces, NULL);
   assert(new_scene->auxes != NULL);
-  new_scene->aux_freers = list_init(5, NULL);
+  new_scene->aux_freers = list_init(nforces, NULL);
   assert(new_scene->aux_freers != NULL);
-  new_scene->body_lists = list_init(5, (void *)list_free);
+  new_scene->body_lists = list_init(nforces, (void *)list_free);
   assert(new_scene->body_lists != NULL);
   return new_scene;
+}
+
+scene_t *scene_init(void) {
+  return scene_init_fixed_size(5, 5);
 }
 
 void free_auxes(scene_t *scene) {
@@ -88,7 +93,7 @@ void scene_add_bodies_force_creator(scene_t *scene, force_creator_t forcer,
   list_add(scene->body_lists, bodies);
 }
 
-void scene_tick(scene_t *scene, double dt) {
+void scene_tick_forces(scene_t *scene) {
   for (size_t i = 0; i < list_size(scene->force_creators); i++) {
     force_creator_t forcer = list_get(scene->force_creators, i);
     void *aux = list_get(scene->auxes, i);
@@ -110,6 +115,9 @@ void scene_tick(scene_t *scene, double dt) {
       }
     }
   }
+}
+
+void scene_tick_after_forces(scene_t *scene, double dt) {
   for (size_t l = 0; l < scene_bodies(scene); l++) {
     if (body_is_removed(scene_get_body(scene, l))) {
       list_remove(scene->bodies, l);
@@ -119,4 +127,9 @@ void scene_tick(scene_t *scene, double dt) {
   for (size_t t = 0; t < scene_bodies(scene); t++) {
     body_tick(scene_get_body(scene, t), dt);
   }
+}
+
+void scene_tick(scene_t *scene, double dt) {
+  scene_tick_forces(scene);
+  scene_tick_after_forces(scene, dt);
 }

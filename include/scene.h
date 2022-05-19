@@ -20,6 +20,17 @@ typedef void (*force_creator_t)(void *aux);
 
 /**
  * Allocates memory for an empty scene.
+ * Allocates exactly specified amount of space to avoid resizing.
+ * Asserts that the required memory is successfully allocated.
+ *
+ * @param nbodies the maximum number of bodies that will ever be in the scene
+ * @param nforces the maximum number of forces that will be in the scene
+ * @return the new scene
+ */
+scene_t *scene_init_fixed_size(size_t nbodies, size_t nforces);
+
+/**
+ * Allocates memory for an empty scene.
  * Makes a reasonable guess of the number of bodies to allocate space for.
  * Asserts that the required memory is successfully allocated.
  *
@@ -98,6 +109,9 @@ void scene_add_bodies_force_creator(scene_t *scene, force_creator_t forcer,
                                     void *aux, list_t *bodies,
                                     free_func_t freer);
 
+void scene_tick_forces(scene_t *scene);
+
+void scene_tick_after_forces(scene_t *scene, double dt);
 /**
  * Executes a tick of a given scene over a small time interval.
  * This requires executing all the force creators
