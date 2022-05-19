@@ -27,7 +27,7 @@ typedef void (*force_creator_t)(void *aux);
  * @param nforces the maximum number of forces that will be in the scene
  * @return the new scene
  */
-scene_t *scene_init_fixed_size(size_t nbodies, size_t nforces)
+scene_t *scene_init_fixed_size(size_t nbodies, size_t nforces);
 
 /**
  * Allocates memory for an empty scene.

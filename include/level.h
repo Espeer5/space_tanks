@@ -25,6 +25,8 @@ typedef struct trajectory {
  */
 void free_traj(trajectory_t *traj);
 
+scene_t *level_scene(level_t *level);
+
 /**
  * Allocates memory for a level based on folders in the path.
  * Makes a reasonable guess of the number of bodies to allocate space for.
@@ -32,7 +34,7 @@ void free_traj(trajectory_t *traj);
  *
  * @return the new scene
  */
-scene_t *level_init_from_folder(char *path);
+level_t *level_init_from_folder(char *path);
 
 /**
  * Releases memory allocated for a given level
@@ -56,7 +58,7 @@ size_t level_bodies(level_t *level);
  * @param level a pointer to a level 
  * @param body a pointer to the body to add to the scene
  */
-void scene_add_dynamic_body(level_t *level, body_t *body);
+void level_add_dynamic_body(level_t *level, body_t *body);
 
 /**
  * Predicts the positions of all dynamic bodies in the level, along

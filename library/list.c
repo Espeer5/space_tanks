@@ -104,16 +104,16 @@ void list_free(list_t *list) {
 size_t list_size(list_t *list) { return list->size; }
 
 size_t get_capacity(list_t *list) { return list->capacity; }
-
-list_t *list_copy(list_t *list, copy_funct_t copier) {
+/*
+list_t *list_copy(list_t *list, copy_func_t copier) {
   list_t *new_list = list_init(list_size(list), list->freer);
   for (size_t i = 0; i < list_size(list); i++) {
     list_add(new_list, copier(list_get(list, i)));
   }
   return new_list;
-}
+}*/
 
-list_t *list_merge(list_t *list1, list_t *list2, copy_funct_t copier) {
+list_t *list_merge(list_t *list1, list_t *list2, copy_func_t copier) {
   assert(list1->freer == list2->freer); //otherwise this makes no sense
   list_t *new_list = list_init(list_size(list1) + list_size(list2), list1->freer);
   for (size_t i = 0; i < list_size(list1); i++) {
