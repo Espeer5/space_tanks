@@ -17,3 +17,12 @@ Game!!
 **BUGS:** Some file access errors
 
 **RESOURCES USED:** TAs on discord
+
+## Thursday May 19 3:00 - 4:30PM
+**WHO:** Jack & Eddie
+
+**WHAT:** Mouse Control, Firing with Mouse
+
+**BUGS:** Mouse Handler
+
+**RESOURCES USED:** Internet
