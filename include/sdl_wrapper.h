@@ -40,6 +40,8 @@ typedef enum { KEY_PRESSED, KEY_RELEASED } key_event_type_t;
 typedef void (*key_handler_t)(char key, key_event_type_t type, double held_time,
                               state_t *state);
 
+typedef void (*mouse_handler_t)(char button, key_event_type_t type, double held_time, state_t *state);
+
 /**
  * Initializes the SDL window and renderer.
  * Must be called once before any of the other SDL functions.
@@ -112,6 +114,8 @@ void sdl_render_scene(scene_t *scene);
  * @param handler the function to call with each key press
  */
 void sdl_on_key(key_handler_t handler);
+
+void sdl_on_click(mouse_handler_t mouse_handler);
 
 /**
  * Gets the amount of time that has passed since the last time
