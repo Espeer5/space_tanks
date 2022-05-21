@@ -4,7 +4,7 @@ DEMOS = spaceinvaders #bounce gravity pacman nbodies damping pegs breakout
 STAFF_LIBS = test_util sdl_wrapper
 # List of C files in "libraries" that you will write.
 # This also defines the order in which the tests are run.
-STUDENT_LIBS = list vector polygon utils body scene background forces collision
+STUDENT_LIBS = list vector polygon utils body weapon scene background forces collision
 
 # find <dir> is the command to find files in a directory
 # ! -name .gitignore tells find to ignore the .gitignore

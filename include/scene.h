@@ -4,6 +4,8 @@
 #include "body.h"
 #include "list.h"
 #include "background.h"
+#include <string.h>
+#include "weapon.h"
 
 /**
  * A collection of bodies and force creators.
@@ -20,15 +22,39 @@ typedef struct scene scene_t;
 typedef void (*force_creator_t)(void *aux);
 
 /**
- * Allocates memory for an empty scene.
+ * @brief A function to be used as the destructive force from a projectile
+ * 
+ */
+typedef void (*proj_forcer_t)(scene_t *scene, body_t *bod1, body_t *bod2);
+
+/**
+ * @brief Allocates memory for an empty scene.
  * Allocates exactly specified amount of space to avoid resizing.
  * Asserts that the required memory is successfully allocated.
- *
- * @param nbodies the maximum number of bodies that will ever be in the scene
- * @param nforces the maximum number of forces that will be in the scene
- * @return the new scene
+ * 
+ * @param nbodies 
+ * @param nforces 
+ * @param user_weapons 
+ * @param background_objs 
+ * @return scene_t* 
  */
-scene_t *scene_init_fixed_size(size_t nbodies, size_t nforces);
+scene_t *scene_init_fixed_size(size_t nbodies, size_t nforces, size_t user_weapons, size_t background_objs);
+
+/**
+ * @brief Adds a weapon tot he scene for use by the user
+ * 
+ * @param scene 
+ * @param weapon 
+ * @param force 
+ */
+void add_user_weapon(scene_t *scene, weapon_t *weapon, proj_forcer_t force);
+
+/**
+ * @brief Cycles through user weapons. Intended to be tied to a key press
+ * 
+ * @param scene 
+ */
+void change_user_weapon(scene_t *scene);
 
 /**
  * Allocates memory for an empty scene.
@@ -38,6 +64,13 @@ scene_t *scene_init_fixed_size(size_t nbodies, size_t nforces);
  * @return the new scene
  */
 scene_t *scene_init(void);
+
+/**
+ * @brief Fires the weapon currently selected by the user
+ * 
+ * @param scene 
+ */
+void fire_user_weapon(scene_t *scene);
 
 /**
  * @brief Returns the number of background graphic objects in the scene

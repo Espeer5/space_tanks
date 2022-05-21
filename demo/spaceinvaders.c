@@ -11,13 +11,14 @@
 #include <stdlib.h>
 #include <string.h>
 #include "background.h"
+#include "weapon.h"
 const size_t shape_steps = 200;
 const double XMAX = 1500;
 const double YMAX = 1000;
 const double UFO_MASS = 2;
 const rgb_color_t UFO_COLOR = {1, 0, 0};
-const size_t UFO_COLUMNS = 8;
-const size_t UFO_ROWS = 3;
+const size_t UFO_COLUMNS = 4;
+const size_t UFO_ROWS = 2;
 const double SHIP_MASS = 2;
 const rgb_color_t SHIP_COLOR = {0, 0, 1};
 const double UFO_VELO = 300;
@@ -251,10 +252,10 @@ void key_handle(char key, key_event_type_t type, double held_time,
                         (vector_t){SHIP_VELOCITY, 0});
       break;
     case SPACE:
-      add_ship_projectile(
-          vec_add(body_get_centroid(scene_get_body(state->scene, 0)),
-                  (vector_t){0, PROJECTILE_OFFSET}),
-          state);
+      fire_user_weapon(state -> scene);
+      break;
+    case DOWN_ARROW:
+      change_user_weapon(state -> scene);
       break;
     }
   }
@@ -316,6 +317,10 @@ state_t *emscripten_init() {
   generate_back_stars(state -> scene, NUM_BACK_STARS, XMAX, YMAX);
   state->loops = 0;
   create_ship(state);
+  weapon_t *weapon = weapon_init((void *)projectile_init, PROJECTILE_VELOCITY, PROJECTILE_COLOR, PROJECTILE_MASS, scene_get_body(state -> scene, 0));
+  weapon_t *weapon2 = weapon_init((void *)ship_init, PROJECTILE_VELOCITY, PROJECTILE_COLOR, PROJECTILE_MASS, scene_get_body(state -> scene, 0));
+  add_user_weapon(state -> scene, weapon, create_destructive_collision);
+  add_user_weapon(state -> scene, weapon2, create_destructive_collision);
   create_enemies(state);
   return state;
 }

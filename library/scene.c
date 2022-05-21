@@ -3,6 +3,7 @@
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include "weapon.h"
 
 typedef struct scene {
   list_t *bodies;
@@ -11,12 +12,33 @@ typedef struct scene {
   list_t *aux_freers;
   list_t *body_lists;
   list_t *background;
+  list_t *user_weapons;
+  size_t current_user_weapon;
 } scene_t;
 
 typedef void (*force_creator_t)(void *aux);
 
+typedef void (*proj_forcer_t)(scene_t *scene, body_t *bod1, body_t *bod2);
 
-scene_t *scene_init_fixed_size(size_t nbodies, size_t nforces) {
+typedef struct weapon_node {
+  weapon_t *weapon;
+  proj_forcer_t force;
+} weapon_node_t;
+
+weapon_node_t *gen_node(weapon_t *weapon, proj_forcer_t force) {
+  weapon_node_t *new_node = malloc(sizeof(weapon_node_t));
+  new_node -> weapon = weapon;
+  new_node -> force = force;
+  return new_node;
+}
+
+void free_weapon_node(weapon_node_t *weapon_node) {
+  free_weapon(weapon_node -> weapon);
+  free(weapon_node);
+}
+
+
+scene_t *scene_init_fixed_size(size_t nbodies, size_t nforces, size_t user_weapons, size_t background_objs) {
   scene_t *new_scene = malloc(sizeof(scene_t));
   assert(new_scene != NULL);
   new_scene->bodies = list_init(nbodies, (void *)body_free);
@@ -31,11 +53,14 @@ scene_t *scene_init_fixed_size(size_t nbodies, size_t nforces) {
   assert(new_scene->body_lists != NULL);
   new_scene -> background = list_init(5, (void *)background_obj_free);
   assert(new_scene -> background != NULL);
+  new_scene -> user_weapons = list_init(user_weapons, (void *)free_weapon_node);
+  assert(new_scene -> user_weapons != NULL);
+  new_scene -> current_user_weapon = 0;
   return new_scene;
 }
 
 scene_t *scene_init(void) {
-  return scene_init_fixed_size(5, 5);
+  return scene_init_fixed_size(5, 5, 5, 5);
 }
 
 void free_auxes(scene_t *scene) {
@@ -53,6 +78,18 @@ void free_auxes(scene_t *scene) {
   list_free(scene->aux_freers);
 }
 
+void add_user_weapon(scene_t *scene, weapon_t *weapon, proj_forcer_t force) {
+  weapon_node_t *node = gen_node(weapon, force);
+  list_add(scene -> user_weapons, node);
+}
+
+void change_user_weapon(scene_t *scene) {
+  if(scene -> current_user_weapon < list_size(scene -> user_weapons)) {
+    scene -> current_user_weapon += 1;
+  }
+  else scene -> current_user_weapon = 0;
+}
+
 void scene_free(scene_t *scene) {
   if (scene->force_creators != NULL) {
     list_free(scene->force_creators);
@@ -66,6 +103,9 @@ void scene_free(scene_t *scene) {
   }
   if(scene -> background != NULL) {
     list_free(scene -> background);
+  }
+  if(scene -> user_weapons != NULL) {
+    list_free(scene -> user_weapons);
   }
   free(scene);
 }
@@ -108,6 +148,21 @@ void scene_add_bodies_force_creator(scene_t *scene, force_creator_t forcer,
   list_add(scene->auxes, aux);
   list_add(scene->aux_freers, freer);
   list_add(scene->body_lists, bodies);
+}
+
+proj_forcer_t get_proj_force(scene_t *scene) {
+  return ((weapon_node_t *)list_get(scene -> user_weapons, scene -> current_user_weapon)) -> force;
+}
+
+void fire_user_weapon(scene_t *scene) {
+  body_t *bod = gen_projectile(((weapon_node_t *)((list_get(scene -> user_weapons, scene -> current_user_weapon)))) -> weapon);
+  scene_add_body(scene, bod);
+  for (size_t i = 1; i < scene_bodies(scene); i++) {
+    if (!strcmp((char *)body_get_info(scene_get_body(scene, i)),
+                "alien")) {
+      (get_proj_force(scene))(scene, bod, scene_get_body(scene, i));
+    }
+  }
 }
 
 void scene_tick_forces(scene_t *scene) {

@@ -104,6 +104,10 @@ void body_tick(body_t *body, double dt) {
   body->current_impulse = VEC_ZERO;
 }
 
+double body_get_angle(body_t *body) {
+  return body -> angle;
+}
+
 void body_remove(body_t *body) { body->is_removed = true; }
 
 bool body_is_removed(body_t *body) { return body->is_removed; }

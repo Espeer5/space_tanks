@@ -96,6 +96,14 @@ rgb_color_t body_get_color(body_t *body);
 void *body_get_info(body_t *body);
 
 /**
+ * @brief Returns the current angle of the specified body
+ * 
+ * @param body 
+ * @return double 
+ */
+double body_get_angle(body_t *body);
+
+/**
  * Translates a body to a new position.
  * The position is specified by the position of the body's center of mass.
  *
