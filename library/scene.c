@@ -84,7 +84,7 @@ void add_user_weapon(scene_t *scene, weapon_t *weapon, proj_forcer_t force) {
 }
 
 void change_user_weapon(scene_t *scene) {
-  if(scene -> current_user_weapon < list_size(scene -> user_weapons)) {
+  if(scene -> current_user_weapon < list_size(scene -> user_weapons) - 1) {
     scene -> current_user_weapon += 1;
   }
   else scene -> current_user_weapon = 0;
