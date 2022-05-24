@@ -30,3 +30,7 @@ vector_t vec_rotate(vector_t v, double angle) {
   return (vector_t){v.x * cos(angle) - v.y * sin(angle),
                     v.x * sin(angle) + v.y * cos(angle)};
 }
+
+double norm(vector_t vec) {
+  return sqrt(vec_dot(vec, vec));
+}

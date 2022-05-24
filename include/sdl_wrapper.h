@@ -40,7 +40,11 @@ typedef enum { KEY_PRESSED, KEY_RELEASED } key_event_type_t;
 typedef void (*key_handler_t)(char key, key_event_type_t type, double held_time,
                               state_t *state);
 
-typedef void (*mouse_handler_t)(char button, key_event_type_t type, double held_time, state_t *state);
+/**
+ * @brief A mouse click handler performing actions whenever one the of the two mouse buttons is pressed
+ * 
+ */
+typedef void (*mouse_handler_t)(char button, key_event_type_t type, double mouse_x, double mouse_y, double held_time, state_t *state);
 
 /**
  * Initializes the SDL window and renderer.

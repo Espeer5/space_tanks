@@ -8,8 +8,8 @@
 #include <time.h>
 
 const char WINDOW_TITLE[] = "BLOW THINGS UP HERE";
-const int WINDOW_WIDTH = 1000;
-const int WINDOW_HEIGHT = 500;
+const int WINDOW_WIDTH = 1400;
+const int WINDOW_HEIGHT = 800;
 const double MS_PER_S = 1e3;
 
 /**
@@ -141,13 +141,17 @@ bool sdl_is_done(state_t *state) {
     char button;
     double button_held_time = (button_timestamp - key_start_timestamp) / MS_PER_S;
     key_event_type_t button_type = event->type == SDL_MOUSEBUTTONDOWN ? KEY_PRESSED : KEY_RELEASED;
+    int mouse_x;
+    int mouse_y;
+    double scale = get_scene_scale(get_window_center());
+    SDL_GetMouseState(&mouse_x, &mouse_y);
     if(event -> type == SDL_BUTTON_LEFT) {
         button = 0;
     }
     if(event -> type == SDL_BUTTON_RIGHT) {
         button = 1;
     }
-    mouse_handler(button, button_type, button_held_time, state);
+    mouse_handler(button, button_type, (double)mouse_x / scale, (double)mouse_y / scale, button_held_time, state);
     break;
     case SDL_KEYDOWN:
     case SDL_KEYUP:

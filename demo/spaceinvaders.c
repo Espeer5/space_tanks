@@ -12,13 +12,14 @@
 #include <string.h>
 #include "background.h"
 #include "weapon.h"
+#include <math.h>
 const size_t shape_steps = 200;
-const double XMAX = 1500;
-const double YMAX = 1000;
+const double XMAX = 1600;
+const double YMAX = 800;
 const double UFO_MASS = 2;
 const rgb_color_t UFO_COLOR = {1, 0, 0};
-const size_t UFO_COLUMNS = 4;
-const size_t UFO_ROWS = 2;
+const size_t UFO_COLUMNS = 1;
+const size_t UFO_ROWS = 1;
 const double SHIP_MASS = 2;
 const rgb_color_t SHIP_COLOR = {0, 0, 1};
 const double UFO_VELO = 300;
@@ -61,7 +62,7 @@ const double UFO_WIDTH_SPACING = 70;
 const double UFO_HEIGHT = 60;
 const double ENEMY_FIRE_RATE_RAND_MAX = 1000;
 const double ENEMY_FIRE_RATE_CONTROL =
-    50; // Lower number to fire less frequently, higher to fire more frequenctly
+    0; // Lower number to fire less frequently, higher to fire more frequenctly
 const size_t NUM_BACK_STARS = 50;
 
 
@@ -264,14 +265,33 @@ void key_handle(char key, key_event_type_t type, double held_time,
   }
 }
 
-void mouse_handle(char button, key_event_type_t type, double held_time, state_t *state) {
+double determine_angle(vector_t origin, vector_t click) {
+  click.y = YMAX - click.y;
+  vector_t diff = vec_subtract(click, origin);
+  if((diff.x > 0 && diff.y < 0) || (diff.x < 0 && diff.y > 0)) {
+    if(diff.y > 0) {
+      return acos(diff.y / norm(diff));
+    }
+    else {
+      return -acos(diff.y / norm(diff));
+    }
+  }
+  else if(diff.x > 0 && diff.y > 0) {
+    return acos(-(diff.y / norm(diff))) + M_PI;
+  }
+  else {
+    return acos(diff.y / norm(diff));
+  }
+}
+
+void mouse_handle(char button, key_event_type_t type, double mouse_x, double mouse_y, double held_time, state_t *state) {
   if (type == KEY_PRESSED) {
     switch(button) {
+      vector_t origin;
       case 0:
-        add_ship_projectile(
-          vec_add(body_get_centroid(scene_get_body(state->scene, 0)),
-                  (vector_t){0, PROJECTILE_OFFSET}),
-          state);
+        origin = body_get_centroid(scene_get_body(state->scene, 0));
+        body_set_rotation(scene_get_body(state->scene, 0), determine_angle(origin, (vector_t) {mouse_x, mouse_y}));
+        fire_user_weapon(state -> scene);
       break;
     }
   }

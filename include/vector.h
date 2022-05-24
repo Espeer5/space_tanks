@@ -92,4 +92,12 @@ double vec_cross(vector_t v1, vector_t v2);
  */
 vector_t vec_rotate(vector_t v, double angle);
 
+/**
+ * @brief Returns the magnitude of the vector
+ * 
+ * @param vec 
+ * @return double 
+ */
+double norm(vector_t vec);
+
 #endif // #ifndef __VECTOR_H__
