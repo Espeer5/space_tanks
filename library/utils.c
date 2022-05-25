@@ -18,6 +18,23 @@ list_t *make_square() {
   return shape;
 }
 
+list_t *asteroid_init(vector_t center, double asteroid_radius, double num_sides) {
+  list_t *asteroid = list_init(num_sides, free);
+  double position_x = center.x;
+  double position_y = center.y;
+  double angle = 0;
+  double d_angle = (2 * M_PI) / num_sides; 
+  for (size_t i = 0; i < num_sides; i++){
+    position_x = center.x + (asteroid_radius * cos(angle));
+    position_y = center.y + (asteroid_radius * sin(angle));
+    vector_t *point = malloc(sizeof(vector_t));
+    *point = (vector_t) {position_x, position_y};
+    list_add(asteroid, point);
+    angle = angle + d_angle;
+  }
+  return asteroid;
+}
+
 double gen_rand(size_t lower, size_t upper) {
   double rand_num = (double)(rand() % (upper - lower + 1)) + lower;
   return rand_num;
