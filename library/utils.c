@@ -42,18 +42,14 @@ list_t *asteroid_outline_init(vector_t center, double asteroid_radius, double nu
 list_t *dimple_init(vector_t center, double radius) {
   list_t *c = list_init(CIRC_PPOINTS, free);
   for (size_t i = 0; i < CIRC_PPOINTS; i++) {
-    double angle = 2 * M_PI * i / CIRC_PPOINTS;
-    vector_t *v = malloc(sizeof(*v));
+    double angle = i * ((2 * M_PI ) / CIRC_PPOINTS);
+    vector_t *v = malloc(sizeof(vector_t));
     *v = (vector_t){center.x + (radius * cos(angle)),
                     center.y + (radius * sin(angle))};
     list_add(c, v);
   }
   return c;
 }
-
-// list_t *asteroid_init(vector_t outline_center, double outline_, double num_sides, double dimple_radius, vector_t dimple_center){
-
-// }
 
 double gen_rand(size_t lower, size_t upper) {
   double rand_num = (double)(rand() % (upper - lower + 1)) + lower;

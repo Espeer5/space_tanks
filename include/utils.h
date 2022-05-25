@@ -25,9 +25,11 @@ double gen_rand(size_t lower, size_t upper);
  */
 rgb_color_t rand_color();
 
+list_t *dimple_init(vector_t center, double radius);
+
 vector_t rand_vec(size_t lower, size_t upper);
 
-list_t *asteroid_init(vector_t center, double asteroid_radius, double num_sides);
+list_t *asteroid_outline_init(vector_t center, double asteroid_radius, double num_sides);
 
 /**
  * @brief Seeds random using the current time

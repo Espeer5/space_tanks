@@ -8,6 +8,7 @@
 #include <assert.h>
 #include "mystring.h"
 #include "utils.h"
+#include <math.h>
 
 const int MAX_LINE_LENGTH = 100;
 const int MAX_PROJ_PER_SHIP = 4;
@@ -154,7 +155,10 @@ level_t *level_init_from_folder(char *path) {
     double asteroid_center_y = 0;
     double asteroid_radius = 0;
     double num_sides = 0;
-    level->scene = scene_init_fixed_size(num_rocks + 1, 1, 1, 1);
+    double num_dimples = num_sides;
+    level->scene = scene_init_fixed_size(100, 1, 1, 1);
+    body_t * new_body = body_init(dimple_init((vector_t) {500, 250}, 100), 1, (rgb_color_t){.8, .2, .5});
+    scene_add_body(level -> scene, new_body);
     for (size_t i = 0; i < num_rocks; i++) {
         info = get_split_line_from_file(rocks_file);
         asteroid_center_x = atoi(info->data[0]);
@@ -162,10 +166,24 @@ level_t *level_init_from_folder(char *path) {
         asteroid_radius = atoi(info->data[2]);
         num_sides = atoi(info->data[3]);
         vector_t asteroid_center = {asteroid_center_x, asteroid_center_y};
-        list_t *asteroid = asteroid_init(asteroid_center, asteroid_radius, num_sides);
-        body_t *new_body = body_init(asteroid, 20, (rgb_color_t){.8, .8, .8});
-        scene_add_body(level->scene, new_body);
-        list_add(level->rocks, new_body);
+        list_t *asteroid = asteroid_outline_init(asteroid_center, asteroid_radius, num_sides);
+        body_t *asteroid_body = body_init(asteroid, 20, (rgb_color_t){0, 0, 0});
+        vector_t dimple_center = {asteroid_center_x, asteroid_center.y};
+        double dimple_radius = asteroid_radius / 3;
+        double dimple_x = dimple_center.x;
+        double dimple_y = dimple_center.y;
+        double dimple_angle = (2 * M_PI) / num_dimples;
+        double angle = 0;
+        for (size_t i = 0; i < num_dimples; i++){
+            dimple_x = dimple_center.x + (dimple_radius * cos(angle));
+            dimple_y = dimple_center.y + (dimple_radius * sin(angle));
+            dimple_center = (vector_t) {dimple_x, dimple_y};
+            list_t *dimple = dimple_init(dimple_center, dimple_radius);
+            body_add_shape(asteroid_body, dimple, (rgb_color_t){1, 1, 1});
+            angle = angle + dimple_angle;
+        }
+        scene_add_body(level->scene, asteroid_body);
+        list_add(level->rocks, asteroid_body);
         free_strarray(info);
     }
     //TODO: add our ship
