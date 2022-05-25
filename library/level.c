@@ -74,17 +74,82 @@ strarray *get_split_line_from_file(FILE *f) {
     return split;
 }
 
-level_t *get_asteroid_info(char *path) {
+// level_t *get_asteroid_info(char *path) {
+//     // level_t *level = malloc(sizeof(level));
+//     char *rockspath = malloc((strlen(path) + 11) * sizeof(char));
+//     strcat(rockspath, path);
+//     strcat(rockspath, "/rocks.dat");
+//     FILE *rocks_file = fopen(rockspath, "r");
+//     assert(rocks_file != NULL);
+//     strarray *info = get_split_line_from_file(rocks_file);
+//     size_t num_rocks = atoi(info->data[0]);
+//     level->rocks = list_init(num_rocks, NULL);
+//     free_strarray(info);
+//     double asteroid_center_x = 0;
+//     double asteroid_center_y = 0;
+//     double asteroid_radius = 0;
+//     double num_sides = 0;
+//     level->scene = scene_init_fixed_size(num_rocks + 1, 1, 1, 1);
+//     for (size_t i = 0; i < num_rocks; i++) {
+//         info = get_split_line_from_file(rocks_file);
+//         asteroid_center_x = atoi(info->data[0]);
+//         asteroid_center_y = atoi(info->data[1]);
+//         asteroid_radius = atoi(info->data[2]);
+//         num_sides = atoi(info->data[3]);
+//         vector_t asteroid_center = {asteroid_center_x, asteroid_center_y};
+//         list_t *asteroid = asteroid_init(asteroid_center, asteroid_radius, num_sides);
+//         body_t *new_body = body_init(asteroid, 20, (rgb_color_t){.8, .8, .8});
+//         scene_add_body(level->scene, new_body);
+//         list_add(level->rocks, new_body);
+//         free_strarray(info);
+//     }
+//     return level;
+// }
+
+FILE *helper_get_data(char*path, char* file_name) {
+    char* abs_path = malloc(sizeof(char) * (strlen(path) + 11));
+    strcat(abs_path, path);
+    strcat(abs_path, file_name);
+    FILE *file = fopen(abs_path, "r");
+    assert(file != NULL);
+    return file;
+}
+
+level_t *level_init_from_folder(char *path) {
     level_t *level = malloc(sizeof(level));
-    char *rockspath = malloc((strlen(path) + 11) * sizeof(char));
-    strcat(rockspath, path);
-    strcat(rockspath, "/rocks.dat");
-    FILE *rocks_file = fopen(rockspath, "r");
-    assert(rocks_file != NULL);
-    strarray *info = get_split_line_from_file(rocks_file);
+    FILE *wall_file = helper_get_data(path, "/walls.dat");
+    FILE *enemy_file = helper_get_data(path, "/enemy.dat");
+    FILE *rocks_file = helper_get_data(path, "/rocks.dat");
+    strarray *info = get_split_line_from_file(wall_file);
+    size_t num_walls = atoi(info->data[0]);
+    level->walls = list_init(num_walls, NULL);
+    free_strarray(info);
+    info = get_split_line_from_file(enemy_file);
+    size_t num_ships = atoi(info->data[0]) + 1;
+    size_t num_dynamic = num_ships * (1 + MAX_PROJ_PER_SHIP);
+    level->dynamic_objs = list_init(num_dynamic, NULL);
+    free_strarray(info);
+    info = get_split_line_from_file(rocks_file);
     size_t num_rocks = atoi(info->data[0]);
     level->rocks = list_init(num_rocks, NULL);
     free_strarray(info);
+    level->scene = scene_init_fixed_size(num_walls + num_dynamic + num_rocks,
+                                 num_dynamic * (num_walls + num_dynamic), 1, 1);
+                                 
+    for (size_t i = 0; i < num_walls; i++) {
+        info = get_split_line_from_file(wall_file);
+        body_t *new_body = get_bodies_from_array(info);
+        scene_add_body(level->scene, new_body);
+        list_add(level->walls, (void *) new_body);
+        free_strarray(info);
+    }
+    for (size_t i = 0; i < num_ships - 1; i++) {
+        info = get_split_line_from_file(enemy_file);
+        body_t *new_body = get_bodies_from_array(info);
+        scene_add_body(level->scene, new_body);
+        list_add(level->dynamic_objs, (void *) new_body);
+        free_strarray(info);
+    }
     double asteroid_center_x = 0;
     double asteroid_center_y = 0;
     double asteroid_radius = 0;
@@ -98,57 +163,14 @@ level_t *get_asteroid_info(char *path) {
         num_sides = atoi(info->data[3]);
         vector_t asteroid_center = {asteroid_center_x, asteroid_center_y};
         list_t *asteroid = asteroid_init(asteroid_center, asteroid_radius, num_sides);
-        body_t *new_body = body_init(asteroid, 20, (rgb_color_t){0, 1, 1});
+        body_t *new_body = body_init(asteroid, 20, (rgb_color_t){.8, .8, .8});
         scene_add_body(level->scene, new_body);
         list_add(level->rocks, new_body);
         free_strarray(info);
     }
+    //TODO: add our ship
     return level;
 }
-
-// level_t *level_init_from_folder(char *path) {
-//     level_t *level = malloc(sizeof(level));
-//     char *wallpath = malloc((strlen(path) + 11) * sizeof(char));
-//     //wallpath = strcat(path, "/walls.dat");
-//     strcat(wallpath, path);
-//     strcat(wallpath, "/walls.dat");
-//     FILE *wall_file = fopen(wallpath, "r");
-//     assert(wall_file != NULL);
-//     char *enemypath = malloc((strlen(path) + 11) * sizeof(char));
-//     //enemypath = strcat(path, "/enemy.dat");
-//     strcat(enemypath, path);
-//     strcat(enemypath, "/enemy.dat");
-//     FILE *enemy_file = fopen(enemypath, "r");
-//     assert(enemy_file != NULL);
-//     strarray *info = get_split_line_from_file(wall_file);
-//     size_t num_walls = atoi(info->data[0]);
-//     level->walls = list_init(num_walls, NULL);
-//     free_strarray(info);
-//     info = get_split_line_from_file(enemy_file);
-//     size_t num_ships = atoi(info->data[0]) + 1;
-//     size_t num_dynamic = num_ships * (1 + MAX_PROJ_PER_SHIP);
-//     level->dynamic_objs = list_init(num_dynamic, NULL);
-//     free_strarray(info);
-//     level->scene = scene_init_fixed_size(num_walls + num_dynamic,
-//                                  num_dynamic * (num_walls + num_dynamic), 1, 1);
-                                 
-//     for (size_t i = 0; i < num_walls; i++) {
-//         info = get_split_line_from_file(wall_file);
-//         body_t *new_body = get_bodies_from_array(info);
-//         scene_add_body(level->scene, new_body);
-//         list_add(level->walls, (void *) new_body);
-//         free_strarray(info);
-//     }
-//     for (size_t i = 0; i < num_ships - 1; i++) {
-//         info = get_split_line_from_file(enemy_file);
-//         body_t *new_body = get_bodies_from_array(info);
-//         scene_add_body(level->scene, new_body);
-//         list_add(level->dynamic_objs, (void *) new_body);
-//         free_strarray(info);
-//     }
-//     //TODO: add our ship
-//     return level;
-// }
 
 void level_free(level_t *level) {
     list_free(level->walls);
