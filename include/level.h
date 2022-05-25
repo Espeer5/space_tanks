@@ -52,6 +52,8 @@ void level_free(level_t *level);
  */
 size_t level_bodies(level_t *level);
 
+level_t *get_asteroid_info(char *path);
+
 /**
  * Adds a dyanmic body to a level.
  *
