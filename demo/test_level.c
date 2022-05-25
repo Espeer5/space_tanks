@@ -28,8 +28,9 @@ state_t *emscripten_init() {
   vector_t max = (vector_t){XMAX, YMAX};
   sdl_init(min, max);
   state_t *state = malloc(sizeof(state_t));
-  state->level = level_init_from_folder("levels/level1");
+  //state->level = level_init_from_folder("levels/level1");
   //scene_add_body(level_scene(state->level), body_init(make_square(), 1, (rgb_color_t) {1,0,0}));
+  state -> level = get_asteroid_info("levels/level1");
   return state;
 }
 
