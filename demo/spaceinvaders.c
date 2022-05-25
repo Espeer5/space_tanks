@@ -14,8 +14,8 @@
 #include "weapon.h"
 #include <math.h>
 const size_t shape_steps = 200;
-const double XMAX = 1600;
-const double YMAX = 800;
+const double XMAX = 2000;
+const double YMAX = 1000;
 const double UFO_MASS = 2;
 const rgb_color_t UFO_COLOR = {1, 0, 0};
 const size_t UFO_COLUMNS = 1;

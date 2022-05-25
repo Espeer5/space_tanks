@@ -9,7 +9,7 @@
 #include "body.h"
 
 const char WINDOW_TITLE[] = "BLOW THINGS UP HERE";
-const int WINDOW_WIDTH = 1400;
+const int WINDOW_WIDTH = 1600;
 const int WINDOW_HEIGHT = 800;
 const double MS_PER_S = 1e3;
 
