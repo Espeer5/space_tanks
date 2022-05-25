@@ -180,7 +180,7 @@ level_t *level_init_from_folder(char *path) {
             dimple_center = (vector_t) {dimple_x, dimple_y};
             list_t *dimple = dimple_init(dimple_center, dimple_radius);
             body_add_shape(asteroid_body, dimple, (rgb_color_t){1, 1, 1});
-            angle = angle + dimple_angle;
+            angle = angle + dimple_angle; 
         }
         scene_add_body(level->scene, asteroid_body);
         list_add(level->rocks, asteroid_body);
