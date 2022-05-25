@@ -15,10 +15,26 @@
 typedef struct body body_t;
 
 /**
+ * @brief A node used to store a polygon associated with a particular color for making sprites
+ * 
+ */
+typedef struct shape_node shape_node_t;
+
+/**
  * Initializes a body without any info.
  * Acts like body_init_with_info() where info and info_freer are NULL.
  */
 body_t *body_init(list_t *shape, double mass, rgb_color_t color);
+
+/**
+ * @brief Gets the shape associated with a shape node stored in body -> shapes
+ * 
+ * @param node 
+ * @return list_t* 
+ */
+list_t *node_get_shape(shape_node_t *node);
+
+rgb_color_t node_get_color(shape_node_t *node);
 
 /**
  * Allocates memory for a body with the given parameters.
@@ -44,13 +60,38 @@ body_t *body_init_with_info(list_t *shape, double mass, rgb_color_t color,
 void body_free(body_t *body);
 
 /**
- * Gets the current shape of a body.
+ * Gets the current base shape of a body.
  * Returns a newly allocated vector list, which must be list_free()d.
  *
  * @param body a pointer to a body returned from body_init()
  * @return the polygon describing the body's current position
  */
-list_t *body_get_shape(body_t *body);
+list_t *body_get_base_shape(body_t *body);
+
+/**
+ * @brief returns the color of the base shape of the body
+ * 
+ * @param body 
+ * @return rgb_color_t 
+ */
+rgb_color_t body_get_color(body_t *body);
+
+/**
+ * @brief Adds another polygon to the graphical representation of a body
+ * 
+ * @param body 
+ * @param shape 
+ * @param color 
+ */
+void body_add_shape(body_t *body, list_t *shape, rgb_color_t color);
+
+/**
+ * @brief Gets a list of all the shapes associated with a body
+ * 
+ * @param body 
+ * @return list_t* 
+ */
+list_t *body_get_shapes(body_t *body);
 
 /**
  * Gets the current center of mass of a body.
@@ -78,14 +119,6 @@ vector_t body_get_velocity(body_t *body);
  * @return the mass passed to body_init(), which must be greater than 0
  */
 double body_get_mass(body_t *body);
-
-/**
- * Gets the display color of a body.
- *
- * @param body a pointer to a body returned from body_init()
- * @return the color passed to body_init(), as an (R, G, B) tuple
- */
-rgb_color_t body_get_color(body_t *body);
 
 /**
  * Gets the information associated with a body.

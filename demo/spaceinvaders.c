@@ -323,9 +323,10 @@ void create_enemies(state_t *state) {
 void create_ship(state_t *state) {
   char *info = malloc(5 * sizeof(char));
   strcpy(info, "SHIP");
-  scene_add_body(state->scene, body_init_with_info(
-                                   ship_init((vector_t){XMAX / 2, UFO_HEIGHT}),
-                                   SHIP_MASS, SHIP_COLOR, (void *)info, free));
+  body_t *body = body_init_with_info(ship_init((vector_t){XMAX / 2, UFO_HEIGHT}), SHIP_MASS, SHIP_COLOR, (void *)info, free);
+  list_t *other_shape = projectile_init(body_get_centroid(body));
+  body_add_shape(body, other_shape, (rgb_color_t){1, 1, 1});
+  scene_add_body(state->scene, body);
 }
 
 state_t *emscripten_init() {

@@ -6,6 +6,7 @@
 #include <math.h>
 #include <stdlib.h>
 #include <time.h>
+#include "body.h"
 
 const char WINDOW_TITLE[] = "BLOW THINGS UP HERE";
 const int WINDOW_WIDTH = 1400;
@@ -179,7 +180,7 @@ bool sdl_is_done(state_t *state) {
 }
 
 void sdl_clear(void) {
-  SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+  SDL_SetRenderDrawColor(renderer, 180, 80, 128, 255);
   SDL_RenderClear(renderer);
 }
 
@@ -224,7 +225,7 @@ void sdl_show(void) {
   boundary->y = max_pixel.y;
   boundary->w = max_pixel.x - min_pixel.x;
   boundary->h = min_pixel.y - max_pixel.y;
-  SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+  SDL_SetRenderDrawColor(renderer, 180, 80, 128, 255);
   SDL_RenderDrawRect(renderer, boundary);
   free(boundary);
 
@@ -240,8 +241,10 @@ void sdl_render_scene(scene_t *scene) {
   size_t body_count = scene_bodies(scene);
   for (size_t i = 0; i < body_count; i++) {
     body_t *body = scene_get_body(scene, i);
-    list_t *shape = body_get_shape(body);
-    sdl_draw_polygon(shape, body_get_color(body));
+    list_t *shapes = body_get_shapes(body);
+    for(size_t j = 0; j < list_size(shapes); j++) {
+    sdl_draw_polygon(node_get_shape((shape_node_t *)(list_get(shapes, j))), node_get_color((shape_node_t *)(list_get(shapes, j))));
+    }
   }
   sdl_show();
 }

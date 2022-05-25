@@ -101,4 +101,12 @@ void add_at(list_t *list, void *object, size_t idx);
 
 list_t *list_merge(list_t *list1, list_t *list2, copy_func_t copier);
 
+/**
+ * @brief Returns a freshly malloced list with nice freshly malloced pointers to the same things as the previous list inside of it
+ * 
+ * @param list 
+ * @return list_t 
+ */
+list_t *list_cpy(list_t *list);
+
 #endif // #ifndef __LIST_H__

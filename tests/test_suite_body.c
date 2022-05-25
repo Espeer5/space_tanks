@@ -15,7 +15,7 @@ void test_body_init() {
   }
   rgb_color_t color = {0, 0.5, 1};
   body_t *body = body_init(shape, 3, color);
-  list_t *shape2 = body_get_shape(body);
+  list_t *shape2 = body_get_base_shape(body);
   assert(list_size(shape2) == VERTICES);
   for (size_t i = 0; i < VERTICES; i++) {
     assert(vec_isclose(*(vector_t *)list_get(shape2, i), v[i]));
@@ -47,7 +47,7 @@ void test_body_setters() {
   assert(vec_isclose(body_get_centroid(body), (vector_t){0, 1.0 / 3.0}));
   body_set_centroid(body, (vector_t){1, 2});
   assert(vec_isclose(body_get_centroid(body), (vector_t){1, 2}));
-  shape = body_get_shape(body);
+  shape = body_get_base_shape(body);
   assert(list_size(shape) == 3);
   assert(
       vec_isclose(*(vector_t *)list_get(shape, 0), (vector_t){2, 5.0 / 3.0}));
@@ -58,7 +58,7 @@ void test_body_setters() {
   list_free(shape);
   body_set_rotation(body, M_PI / 2);
   assert(vec_isclose(body_get_centroid(body), (vector_t){1, 2}));
-  shape = body_get_shape(body);
+  shape = body_get_base_shape(body);
   assert(list_size(shape) == 3);
   assert(
       vec_isclose(*(vector_t *)list_get(shape, 0), (vector_t){4.0 / 3.0, 3}));
@@ -69,7 +69,7 @@ void test_body_setters() {
   list_free(shape);
   body_set_centroid(body, (vector_t){3, 4});
   assert(vec_isclose(body_get_centroid(body), (vector_t){3, 4}));
-  shape = body_get_shape(body);
+  shape = body_get_base_shape(body);
   assert(list_size(shape) == 3);
   assert(
       vec_isclose(*(vector_t *)list_get(shape, 0), (vector_t){10.0 / 3.0, 5}));
@@ -109,7 +109,7 @@ void test_body_tick() {
   }
   double t = STEPS * DT;
   vector_t new_x = vec_multiply(t * t / 2, A);
-  shape = body_get_shape(body);
+  shape = body_get_base_shape(body);
   assert(vec_isclose(*(vector_t *)list_get(shape, 0),
                      vec_add((vector_t){-1, -1}, new_x)));
   assert(vec_isclose(*(vector_t *)list_get(shape, 1),

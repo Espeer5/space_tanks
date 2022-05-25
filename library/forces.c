@@ -141,8 +141,8 @@ void free_collision_aux(void *aux) {
 
 void collision_creator(void *aux) {
   collision_aux_t *data = (collision_aux_t *)aux;
-  list_t *shape1 = body_get_shape(data->body1);
-  list_t *shape2 = body_get_shape(data->body2);
+  list_t *shape1 = body_get_base_shape(data->body1);
+  list_t *shape2 = body_get_base_shape(data->body2);
   collision_info_t collision_axis = find_collision(shape1, shape2);
   if (collision_axis.collided) {
     if (data->counter < 1) {
