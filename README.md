@@ -28,13 +28,22 @@ Game!!
 **RESOURCES USED:** None
 
 ## Thursday May 19 3:00 - 4:30PM
-**WHO:** Jack & Eddie
+**WHO:** Jack
 
 **WHAT:** Mouse Control, Firing with Mouse
 
 **BUGS:** Mouse Handler
 
 **RESOURCES USED:** Internet
+
+## Saturday May 21 11:00am - 12:30PM
+**WHO:** Jack
+
+**WHAT:** Mouse control to direct the ship to fire in a certain direction.
+
+**BUGS:** Trouble figuring out geometry to get the correct angles with the mouse moving different directions.
+
+**RESOURCES USED:** Help from Eddie later, internet.
 
 ## Saturday May 21 4:00 - 6:00 PM
 **WHO:** Eddie
