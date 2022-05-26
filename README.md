@@ -64,6 +64,15 @@ Game!!
 
 **RESOURCES USED:** Demos graphing calculator
 
+## Sunday May May 22 8:00 pm - 11:00 pm
+**WHO:** Ryan
+
+**WHAT:** Was figuring out how to pull data from .dat files to create the graphic and level design. Created asteroid init functions. 
+
+**BUGS:** Out of order code. 
+
+**RESOURCES USED:** Edward Speer. 
+
 ## Monday May 23 11:000 - 3:00 PM
 
 **WHO:** Eddie
@@ -73,5 +82,14 @@ Game!!
 **BUGS:** The struct I made for storing weapons as colors didn't process through scene correctly because I was a brick and was passing in a single pointer instead of a pointer to a pointer
 
 **RESOURCES USED:** None
+
+## Sunday May May 24 8:00 pm - 12:00 pm
+**WHO:** Ryan
+
+**WHAT:** Used Eddie's struct implementation to create sprites so that the asteroids can have dimples to add more detail to the level design. 
+
+**BUGS:** Out of order code. 
+
+**RESOURCES USED:** Edward Speer. 
 
 
