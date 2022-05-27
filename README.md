@@ -27,7 +27,7 @@ Game!!
 
 **RESOURCES USED:** None
 
-## Thursday May 19 3:00 - 4:30PM
+## Thursday May 19 3:00 - 5:00PM
 **WHO:** Jack
 
 **WHAT:** Mouse Control, Firing with Mouse
@@ -73,13 +73,13 @@ Game!!
 
 **RESOURCES USED:** Edward Speer. 
 
-## Monday May 23 11:000 - 3:00 PM
+## Monday May 23 11:00 - 3:00 PM
 
-**WHO:** Eddie
+**WHO:** Jack and Eddie
 
 **WHAT:** Created a struct for different weapons that create different projectile types with different force creators for the game, and making body be represented by a list of polygons instead of one polygon
 
-**BUGS:** The struct I made for storing weapons as colors didn't process through scene correctly because I was a brick and was passing in a single pointer instead of a pointer to a pointer
+**BUGS:** The struct we made for storing weapons as colors didn't process through scene correctly because we were passing in a single pointer instead of a pointer to a pointer
 
 **RESOURCES USED:** None
 
