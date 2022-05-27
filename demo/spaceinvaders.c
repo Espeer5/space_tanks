@@ -15,10 +15,10 @@
 #include <math.h>
 const size_t shape_steps = 200;
 const double XMAX = 2000;
-const double YMAX = 1000;
+const double YMAX = 700;
 const double UFO_MASS = 2;
 const rgb_color_t UFO_COLOR = {1, 0, 0};
-const size_t UFO_COLUMNS = 1;
+const size_t UFO_COLUMNS = 4;
 const size_t UFO_ROWS = 1;
 const double SHIP_MASS = 2;
 const rgb_color_t SHIP_COLOR = {0, 0, 1};
@@ -62,8 +62,10 @@ const double UFO_WIDTH_SPACING = 70;
 const double UFO_HEIGHT = 60;
 const double ENEMY_FIRE_RATE_RAND_MAX = 1000;
 const double ENEMY_FIRE_RATE_CONTROL =
-    0; // Lower number to fire less frequently, higher to fire more frequenctly
+    400; // Lower number to fire less frequently, higher to fire more frequenctly
 const size_t NUM_BACK_STARS = 50;
+const size_t POSITION_APPROXIMATION_ORDER = 50;
+const double ANG_VAR = 0.1;
 
 
 typedef struct state {
@@ -94,7 +96,7 @@ list_t *projectile_init(vector_t base) {
 
 void add_enemy_projectile(vector_t base, state_t *state) {
   char *info = malloc(7 * sizeof(char));
-  strcpy(info, "bullet");
+  strcpy(info, "ebullet");
   body_t *bod = body_init_with_info(projectile_init(base), PROJECTILE_MASS,
                                     PROJECTILE_COLOR, (void *)info, free);
   body_set_velocity(bod, (vector_t){0, -PROJECTILE_VELOCITY});
@@ -103,7 +105,7 @@ void add_enemy_projectile(vector_t base, state_t *state) {
 
 void add_ship_projectile(vector_t base, state_t *state) {
   char *info = malloc(7 * sizeof(char));
-  strcpy(info, "bullet");
+  strcpy(info, "pbullet");
   body_t *bod = body_init_with_info(projectile_init(base), PROJECTILE_MASS,
                                     PROJECTILE_COLOR, (void *)info, free);
   body_set_velocity(bod, (vector_t){0, PROJECTILE_VELOCITY});
@@ -308,7 +310,8 @@ void check_enemy_height(state_t *state) {
       exit(0);
     }
     if ((body_get_centroid(body).y <= 0 || body_get_centroid(body).y >= YMAX) &&
-        !strcmp((char *)body_get_info(body), "bullet")) {
+        (!strcmp((char *)body_get_info(body), "pbullet")
+        || !strcmp((char *)body_get_info(body), "ebullet"))) {
       scene_remove_body(state->scene, i);
     }
   }
@@ -327,6 +330,35 @@ void create_ship(state_t *state) {
   list_t *other_shape = projectile_init(body_get_centroid(body));
   body_add_shape(body, other_shape, (rgb_color_t){1, 1, 1});
   scene_add_body(state->scene, body);
+}
+
+void shoot_as_ai(state_t *state, body_t *enemy) {
+  // Goes to arbitrary order to approximate this, but 1-2 is probably enough
+  body_t *player = scene_get_body(state->scene, 0);
+  vector_t gap = vec_subtract(body_get_centroid(enemy),
+                        body_get_centroid(player));
+  double dt = sqrt(vec_dot(gap, gap)) / PROJECTILE_VELOCITY;
+  for (size_t i = 1; i < POSITION_APPROXIMATION_ORDER; i++) {
+    vector_t new_player_position = vec_add(body_get_centroid(player), 
+              vec_multiply(dt * 0.5, body_get_velocity(player)));
+    gap = vec_subtract(body_get_centroid(enemy),
+                        new_player_position);
+    dt = sqrt(vec_dot(gap, gap)) / PROJECTILE_VELOCITY;                    
+  }
+  double angle = atan2(-gap.y, -gap.x);
+  angle += (rand() / RAND_MAX) * ANG_VAR;
+
+  vector_t cent = body_get_centroid(enemy);
+  add_enemy_projectile(vec_add(cent, vec_multiply(PROJECTILE_OFFSET,
+    (vector_t){cos(angle), sin(angle)})), state);
+  body_set_rotation(enemy, angle + M_PI / 2);
+  body_t *projectile = scene_get_body(state->scene, scene_bodies(state->scene) - 1);
+  body_set_velocity(projectile, vec_multiply(PROJECTILE_VELOCITY,
+                    (vector_t){cos(angle), sin(angle)}));
+  body_set_rotation(projectile, angle - M_PI / 2);
+  create_destructive_collision(
+      state->scene, scene_get_body(state->scene, 0), projectile);
+
 }
 
 state_t *emscripten_init() {
@@ -358,12 +390,8 @@ void emscripten_main(state_t *state) {
       body = scene_get_body(state->scene,
                             gen_rand(1, scene_bodies(state->scene) - 1));
     }
-    vector_t cent = body_get_centroid(body);
-    add_enemy_projectile(vec_add(cent, (vector_t){0, -PROJECTILE_OFFSET}),
-                         state);
-    create_destructive_collision(
-        state->scene, scene_get_body(state->scene, 0),
-        scene_get_body(state->scene, scene_bodies(state->scene) - 1));
+    shoot_as_ai(state, body);
+    
   }
   double dt = time_since_last_tick();
   check_enemy_x(state);
