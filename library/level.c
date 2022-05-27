@@ -167,10 +167,10 @@ level_t *level_init_from_folder(char *path) {
         body_t *asteroid_body = body_init(asteroid, 20, (rgb_color_t){.5, .5, .5});
         vector_t dimple_center = body_get_centroid(asteroid_body);
         double dimples_radius = asteroid_radius / 2;
-        double dimple_radius = asteroid_radius / 15;
+        double dimple_radius = asteroid_radius / 7;
         double dimple_x = dimple_center.x;
         double dimple_y = dimple_center.y;
-        size_t num_dimples = num_sides;
+        size_t num_dimples = (num_sides / 4) + 2;
         double dimple_angle = (2 * M_PI) / num_dimples;
         double angle = 0;
         for (size_t i = 0; i < num_dimples; i++){
