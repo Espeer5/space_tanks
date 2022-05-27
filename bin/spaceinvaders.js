@@ -205,11 +205,7 @@ Module['FS_createPath']("/levels", "level1", true, true);
     }
 
     }
-<<<<<<< HEAD
-    loadPackage({"files": [{"filename": "/levels/level1/rocks.dat", "start": 0, "end": 110}, {"filename": "/levels/level1/enemy.dat", "start": 110, "end": 136}, {"filename": "/levels/level1/walls.dat", "start": 136, "end": 162}], "remote_package_size": 162, "package_uuid": "f1ca91a7-1b05-40be-b7f3-08c8cbb75e28"});
-=======
-    loadPackage({"files": [{"filename": "/levels/level1/rocks.dat", "start": 0, "end": 175}, {"filename": "/levels/level1/enemy.dat", "start": 175, "end": 201}, {"filename": "/levels/level1/walls.dat", "start": 201, "end": 227}], "remote_package_size": 227, "package_uuid": "8a328a62-e8e3-40e8-bc09-9f8f3a77daf8"});
->>>>>>> 8a9f5e871c0a40131b59041e0e1dc7b8392f96c3
+    loadPackage({"files": [{"filename": "/levels/level1/rocks.dat", "start": 0, "end": 206}, {"filename": "/levels/level1/enemy.dat", "start": 206, "end": 232}, {"filename": "/levels/level1/walls.dat", "start": 232, "end": 258}], "remote_package_size": 258, "package_uuid": "2276589a-e9a8-4606-ba7b-e1ea23664769"});
 
   })();
 
