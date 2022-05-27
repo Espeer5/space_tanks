@@ -90,4 +90,12 @@ Game!!
 
 **BUGS:** Out of order code. 
 
-**RESOURCES USED:** Edward Speer. 
+**RESOURCES USED:** Edward Speer.
+## Thursday May 26 3:00 pm - 6:00 pm
+**WHO:** Eli
+
+**WHAT:** Implemented basic level of AI shot aiming in space invader demo (it is now very hard to win). 
+
+**BUGS:** Lots of rotation alignment things were weird, because I'm bad at geometry.
+
+**RESOURCES USED:** None.
