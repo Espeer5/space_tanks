@@ -74,7 +74,7 @@ void sdl_clear(void);
  * @param points the list of vertices of the polygon
  * @param color the color used to fill in the polygon
  */
-void sdl_draw_polygon(list_t *points, rgb_color_t color);
+void sdl_draw_polygon(list_t *points, rgb_color_t color, double a);
 
 /**
  * Displays the rendered frame on the SDL window.

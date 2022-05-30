@@ -1,5 +1,5 @@
 # List of demo programs
-DEMOS = spaceinvaders bounce test_level #gravity pacman nbodies damping pegs breakout
+DEMOS = spaceinvaders test_level #gravity pacman nbodies damping pegs breakout bounce
 # List of C files in "libraries" that we provide
 STAFF_LIBS = test_util sdl_wrapper
 # List of C files in "libraries" that you will write.
