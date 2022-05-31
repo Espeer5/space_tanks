@@ -2,6 +2,7 @@
 #include "list.h"
 #include <math.h>
 #include "body.h"
+#include "constants.h"
 
 const double CIRC_PPOINTS = 65;
 

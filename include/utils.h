@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <time.h>
 
+
 list_t *make_square();
 /**
  * @brief Generates a random double between the values of two passed in size_ts
@@ -16,6 +17,8 @@ list_t *make_square();
  * @return double
  */
 double gen_rand(size_t lower, size_t upper);
+
+list_t *ship_init(vector_t origin);
 
 /**
  * @brief Generates a random rgb_color_t by generating three random doubles and
