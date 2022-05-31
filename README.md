@@ -91,6 +91,7 @@ Game!!
 **BUGS:** Out of order code. 
 
 **RESOURCES USED:** Edward Speer.
+
 ## Thursday May 26 3:00 pm - 6:00 pm
 **WHO:** Eli
 
@@ -99,3 +100,12 @@ Game!!
 **BUGS:** Lots of rotation alignment things were weird, because I'm bad at geometry.
 
 **RESOURCES USED:** None.
+
+## Sunday May May 24 6:00 pm - 11:00 pm
+**WHO:** Ryan
+
+**WHAT:** Created the borders for the demo and added force collisions to the walls and dynamic objects. Started working on level 2 design and finished up level design 1 with the new XMAX and YMAX ranges. 
+
+**BUGS:** Out of order code. 
+
+**RESOURCES USED:** Edward Speer.
