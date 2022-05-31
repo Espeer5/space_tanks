@@ -35,7 +35,7 @@ scene_t *level_scene(level_t *level);
  *
  * @return the new scene
  */
-level_t *level_init_from_folder(char *path);
+level_t *level_init_from_folder(char *path, double XMAX, double YMAX);
 
 /**
  * Releases memory allocated for a given level
