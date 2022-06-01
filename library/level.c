@@ -33,8 +33,8 @@ const rgb_color_t SHIP_COLOR = {0, 0, 1};
 const double UFO_VELO = 300;
 const double PROJECTILE_MASS = 3;
 const rgb_color_t PROJECTILE_COLOR = {0, 1, 0};
-const double PROJECTILE_VELOCITY = 500;
-const double SHIP_VELOCITY = 300;
+const double PROJECTILE_VELOCITY = 750;
+const double SHIP_VELOCITY = 700;
 const size_t NUM_ENEMIES = 24;
 const double PROJECTILE_OFFSET =
     9; // How far from a body does its projectile spawn
@@ -99,22 +99,6 @@ void free_traj(trajectory_t *traj) {
     free(traj);
 }
 
-list_t *brick_init(vector_t bot_left, double brick_width, double brick_height) {
-  list_t *brick = list_init(4, free);
-  vector_t *first = malloc(sizeof(vector_t));
-  *first = (vector_t){bot_left.x, bot_left.y};
-  list_add(brick, first);
-  vector_t *second = malloc(sizeof(vector_t));
-  *second = (vector_t){bot_left.x, bot_left.y + brick_height};
-  list_add(brick, second);
-  vector_t *third = malloc(sizeof(vector_t));
-  *third = (vector_t){bot_left.x + brick_width, bot_left.y + brick_height};
-  list_add(brick, third);
-  vector_t *fourth = malloc(sizeof(vector_t));
-  *fourth = (vector_t){bot_left.x + brick_width, bot_left.y};
-  list_add(brick, fourth);
-  return brick;
-}
 
 list_t *ship_init(vector_t origin) {
   size_t steps = shape_steps;
@@ -170,7 +154,9 @@ list_t *ship_init(vector_t origin) {
 
 
 body_t *get_bodies_from_array(strarray *arr) {
-    body_t *enemy = body_init(ship_init((vector_t) {(double) atoi(arr -> data[0]), (double) atoi(arr -> data[1])}), SHIP_MASS, (rgb_color_t) {1, 0, 0});
+    char *info = malloc(6 * sizeof(char));
+    strcpy(info, "alien");
+    body_t *enemy = body_init_with_info(ship_init((vector_t) {(double) atoi(arr -> data[0]), (double) atoi(arr -> data[1])}), SHIP_MASS, (rgb_color_t) {1, 0, 0}, info, free);
     return enemy;
  }
 
@@ -265,7 +251,7 @@ level_t *level_init_from_folder(char *path, double XMAX, double YMAX) {
         num_sides = atoi(info->data[3]);
         vector_t asteroid_center = {asteroid_center_x, asteroid_center_y};
         list_t *asteroid = asteroid_outline_init(asteroid_center, asteroid_radius, num_sides);
-        body_t *asteroid_body = body_init(asteroid, 20, (rgb_color_t){.5, .5, .5});
+        body_t *asteroid_body = body_init(asteroid, INFINITY, (rgb_color_t){.5, .5, .5});
         vector_t dimple_center = body_get_centroid(asteroid_body);
         double dimples_radius = asteroid_radius / 2;
         double dimple_radius = asteroid_radius / 15;
@@ -283,6 +269,7 @@ level_t *level_init_from_folder(char *path, double XMAX, double YMAX) {
             angle = angle + dimple_angle; 
         }
         scene_add_body(level->scene, asteroid_body);
+        create_physics_collision(level -> scene, 1, asteroid_body, level->user);
         list_add(level->rocks, asteroid_body);
     }
     free_strarray(info);

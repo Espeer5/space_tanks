@@ -6,6 +6,7 @@
 #include <stdbool.h>
 #include "level.h"
 #include "utils.h"
+#include "forces.h"
 
 const double XMAX = 2000;
 const double YMAX = 1000;
@@ -21,18 +22,27 @@ void key_handle(char key, key_event_type_t type, double held_time,
   if (type == KEY_PRESSED) {
     switch (key) {
     case LEFT_ARROW:
+    body_set_rotation(scene_get_body(level_scene(state -> level), 0), M_PI / 2);
       body_set_velocity(scene_get_body(level_scene(state -> level), 0),
                         (vector_t){-SHIP_VELOCITY1, 0});
       break;
     case RIGHT_ARROW:
+      body_set_rotation(scene_get_body(level_scene(state -> level), 0),  3 * M_PI / 2);
       body_set_velocity(scene_get_body(level_scene(state -> level), 0),
                         (vector_t){SHIP_VELOCITY1, 0});
+      break;
+    case UP_ARROW:
+      body_set_rotation(scene_get_body(level_scene(state -> level), 0), 0);
+      body_set_velocity(scene_get_body(level_scene(state -> level), 0),
+                        (vector_t){0, SHIP_VELOCITY1});
       break;
     case SPACE:
       fire_user_weapon(level_scene(state -> level));
       break;
     case DOWN_ARROW:
-      change_user_weapon(level_scene(state -> level));
+      body_set_rotation(scene_get_body(level_scene(state -> level), 0), M_PI);
+      body_set_velocity(scene_get_body(level_scene(state -> level), 0),
+                        (vector_t){0, -SHIP_VELOCITY1});
       break;
     }
   }
