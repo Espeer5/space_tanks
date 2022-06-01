@@ -5,6 +5,7 @@
 #include "list.h"
 #include "scene.h"
 #include "utils.h"
+#include "sdl_wrapper.h"
 
 /**
  * A generalization of scene to .
@@ -26,7 +27,19 @@ typedef struct trajectory {
  */
 void free_traj(trajectory_t *traj);
 
+size_t level_rocks(level_t *level);
+
 scene_t *level_scene(level_t *level);
+
+list_t *level_get_rocks(level_t *level);
+
+mouse_handler_t *get_mouse_handle(level_t *level);
+
+void set_mouse_handle(level_t *level, mouse_handler_t *handler);
+
+key_handler_t *get_key_handler(level_t *level);
+
+void set_key_handler(level_t *level, key_handler_t *handler);
 
 /**
  * Allocates memory for a level based on folders in the path.

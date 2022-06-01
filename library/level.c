@@ -10,6 +10,7 @@
 #include "utils.h"
 #include <math.h>
 #include "forces.h"
+#include "sdl_wrapper.h"
 
 const int MAX_LINE_LENGTH = 100;
 const int MAX_PROJ_PER_SHIP = 4;
@@ -33,8 +34,8 @@ const rgb_color_t SHIP_COLOR = {0, 0, 1};
 const double UFO_VELO = 300;
 const double PROJECTILE_MASS = 3;
 const rgb_color_t PROJECTILE_COLOR = {0, 1, 0};
-const double PROJECTILE_VELOCITY = 750;
-const double SHIP_VELOCITY = 700;
+const double PROJECTILE_VELOCITY = 300;
+const double SHIP_VELOCITY = 850;
 const size_t NUM_ENEMIES = 24;
 const double PROJECTILE_OFFSET =
     9; // How far from a body does its projectile spawn
@@ -87,6 +88,8 @@ typedef struct level {
     list_t *dynamic_objs;
     list_t *rocks;
     body_t *user;
+    key_handler_t *key_handle;
+    mouse_handler_t *mouse_handle;
 } level_t;
 
 
@@ -97,6 +100,30 @@ scene_t *level_scene(level_t *level) {
 void free_traj(trajectory_t *traj) {
     list_free(traj->positions);
     free(traj);
+}
+
+size_t level_rocks(level_t *level) {
+    return list_size(level -> rocks);
+}
+
+list_t *level_get_rocks(level_t *level) {
+    return level -> rocks;
+}
+
+void set_key_handler(level_t *level, key_handler_t *handler) {
+    level -> key_handle = handler;
+}
+
+key_handler_t *get_key_handler(level_t *level) {
+    return level -> key_handle;
+}
+
+void set_mouse_handle(level_t *level, mouse_handler_t *handler) {
+    level -> mouse_handle = handler;
+}
+
+mouse_handler_t *get_mouse_handle(level_t *level) {
+    return level -> mouse_handle;
 }
 
 
@@ -251,7 +278,9 @@ level_t *level_init_from_folder(char *path, double XMAX, double YMAX) {
         num_sides = atoi(info->data[3]);
         vector_t asteroid_center = {asteroid_center_x, asteroid_center_y};
         list_t *asteroid = asteroid_outline_init(asteroid_center, asteroid_radius, num_sides);
-        body_t *asteroid_body = body_init(asteroid, INFINITY, (rgb_color_t){.5, .5, .5});
+        char *info = malloc(5 * sizeof(char));
+        strcpy(info, "rock");
+        body_t *asteroid_body = body_init_with_info(asteroid, PROJECTILE_MASS, (rgb_color_t){.5, .5, .5}, info, free);
         vector_t dimple_center = body_get_centroid(asteroid_body);
         double dimples_radius = asteroid_radius / 2;
         double dimple_radius = asteroid_radius / 15;
@@ -273,6 +302,12 @@ level_t *level_init_from_folder(char *path, double XMAX, double YMAX) {
         list_add(level->rocks, asteroid_body);
     }
     free_strarray(info);
+    for(size_t t = 0; t < list_size(level -> rocks); t++) {
+        body_t *rock = list_get(level -> rocks, t);
+        for(size_t l = 0; l < list_size(level -> dynamic_objs); l++) {
+            create_destructive_collision(level -> scene, rock, list_get(level -> dynamic_objs, l));
+        }
+    }
     //TODO: add our ship
     return level;
 }

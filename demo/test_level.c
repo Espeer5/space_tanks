@@ -7,15 +7,17 @@
 #include "level.h"
 #include "utils.h"
 #include "forces.h"
+#include "scene.h"
 
-const double XMAX = 2000;
-const double YMAX = 1000;
+const double XMAX = 1600;
+const double YMAX = 800;
 const size_t BACK_STARS = 100;
 const double SHIP_VELOCITY1 = 200;
 
 typedef struct state {
   level_t *level;
 } state_t;
+
 
 void key_handle(char key, key_event_type_t type, double held_time,
                 state_t *state) {
@@ -39,8 +41,13 @@ void key_handle(char key, key_event_type_t type, double held_time,
       break;
     case SPACE:
       proj = fire_user_weapon(level_scene(state -> level));
-      for(size_t i = 0; i < scene_bodies(level_scene(state -> level)); i++) {
-        create_physics_collision(level_scene(state-> level), .8, proj, scene_get_body(level_scene(state -> level), i));
+      scene_t *scene = level_scene(state -> level);
+      for (size_t i = 1; i < scene_bodies(scene); i++) {
+        if (!strcmp((char *)body_get_info(scene_get_body(scene, i)),
+                    "alien")) {
+          (get_proj_force(scene))(scene, proj, scene_get_body(scene, i));
+        }
+        else create_physics_collision(scene, .7, proj, scene_get_body(scene, i));
       }
       break;
     case DOWN_ARROW:
@@ -82,9 +89,15 @@ void mouse_handle(char button, key_event_type_t type, double mouse_x, double mou
         origin = body_get_centroid(scene_get_body(level_scene(state -> level), 0));
         body_set_rotation(scene_get_body(level_scene(state -> level), 0), determine_angle(origin, (vector_t) {mouse_x, mouse_y}));
         body_t *proj = fire_user_weapon(level_scene(state -> level));
-        for(size_t i = 0; i < scene_bodies(level_scene(state -> level)); i++) {
-        create_physics_collision(level_scene(state-> level), .8, proj, scene_get_body(level_scene(state -> level), i));
+        scene_t *scene = level_scene(state -> level);
+        for (size_t i = 1; i < scene_bodies(scene); i++) {
+        if (!strcmp((char *)body_get_info(scene_get_body(scene, i)),
+                    "alien")) {
+          (get_proj_force(scene))(scene, proj, scene_get_body(scene, i));
+        }
+        else create_physics_collision(scene, .7, proj, scene_get_body(scene, i));
       }
+      break;
       break;
     }
   }

@@ -80,6 +80,8 @@ body_t *fire_user_weapon(scene_t *scene);
  */
 size_t background_objs(scene_t *scene);
 
+proj_forcer_t get_proj_force(scene_t *scene);
+
 /**
  * @brief Returns the background graphic of the given index
  * 
