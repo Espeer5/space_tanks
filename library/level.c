@@ -84,7 +84,6 @@ const double ANG_VAR = 0.1;
  */
 typedef struct level {
     scene_t *scene;
-    list_t *walls;
     list_t *dynamic_objs;
     list_t *rocks;
     body_t *user;
@@ -168,26 +167,6 @@ list_t *ship_init(vector_t origin) {
 }
 
 
-void wall_creator(level_t *level, double XMAX, double YMAX){
-    level -> walls = list_init(4, NULL);
-    list_t *right_wall = brick_init((vector_t){XMAX, 0}, 1, YMAX);
-    body_t *right = body_init(right_wall, INFINITY, (rgb_color_t) {0, 0, 0});
-    list_add(level->walls, right);
-    scene_add_body(level->scene, right);
-    list_t *top_wall = brick_init((vector_t){0, YMAX}, XMAX, 1);
-    body_t *top = body_init(top_wall, INFINITY, (rgb_color_t) {0, 0, 0});
-    list_add(level->walls, top);
-    scene_add_body(level->scene, top);
-    list_t *left_wall = brick_init((vector_t){0, 0}, 1, YMAX);
-    body_t *left = body_init(left_wall, INFINITY, (rgb_color_t) {0, 0, 0});
-    list_add(level->walls, left);
-    scene_add_body(level->scene, left);
-    list_t *bottom_wall = brick_init((vector_t){0, 0}, XMAX, 1);
-    body_t *bottom = body_init(bottom_wall, INFINITY, (rgb_color_t) {0, 0, 0});
-    list_add(level->walls, bottom);
-    scene_add_body(level->scene, bottom);
-}
-
 
 
 body_t *get_bodies_from_array(strarray *arr) {
@@ -249,7 +228,8 @@ list_t *projectile_init(vector_t base) {
 
 level_t *level_init_from_folder(char *path, double XMAX, double YMAX) {
     level_t *level = malloc(sizeof(level));
-    level -> user = body_init(ship_init(START), SHIP_MASS, SHIP_COLOR);
+    body_t *user_bod = body_init(ship_init(START), SHIP_MASS, SHIP_COLOR);
+    level -> user = user_bod;
     FILE *enemy_file = helper_get_data(path, "/enemy.dat");
     FILE *rocks_file = helper_get_data(path, "/rocks.dat");
     strarray *info = get_split_line_from_file(enemy_file);
@@ -305,21 +285,12 @@ level_t *level_init_from_folder(char *path, double XMAX, double YMAX) {
         scene_add_body(level->scene, asteroid_body);
         list_add(level->rocks, asteroid_body);
     }
-    wall_creator(level, XMAX, YMAX);
-    for (size_t i = 0; i < num_dynamic; i++){
-        body_t *body_i = list_get(level->dynamic_objs, i);
-        for(size_t j = 0; j < 4; j++){
-              body_t *body_j = list_get(level->walls, j);
-            create_physics_collision(level->scene, 1, body_i, body_j);
-        }
-    }
     free_strarray(info);
     //TODO: add our ship
     return level;
 }
 
 void level_free(level_t *level) {
-    list_free(level->walls);
     list_free(level->dynamic_objs);
     scene_free(level->scene);
 }
