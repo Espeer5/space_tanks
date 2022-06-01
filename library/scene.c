@@ -154,7 +154,7 @@ proj_forcer_t get_proj_force(scene_t *scene) {
   return ((weapon_node_t *)list_get(scene -> user_weapons, scene -> current_user_weapon)) -> force;
 }
 
-void fire_user_weapon(scene_t *scene) {
+body_t *fire_user_weapon(scene_t *scene) {
   body_t *bod = gen_projectile(((weapon_node_t *)((list_get(scene -> user_weapons, scene -> current_user_weapon)))) -> weapon);
   scene_add_body(scene, bod);
   for (size_t i = 1; i < scene_bodies(scene); i++) {
@@ -163,6 +163,7 @@ void fire_user_weapon(scene_t *scene) {
       (get_proj_force(scene))(scene, bod, scene_get_body(scene, i));
     }
   }
+  return bod;
 }
 
 void scene_tick_forces(scene_t *scene) {

@@ -70,7 +70,7 @@ scene_t *scene_init(void);
  * 
  * @param scene 
  */
-void fire_user_weapon(scene_t *scene);
+body_t *fire_user_weapon(scene_t *scene);
 
 /**
  * @brief Returns the number of background graphic objects in the scene

@@ -310,7 +310,6 @@ void shoot_as_ai(state_t *state, body_t *enemy) {
   body_set_rotation(projectile, angle - M_PI / 2);
   create_destructive_collision(
       state->scene, scene_get_body(state->scene, 0), projectile);
-
 }
 
 state_t *emscripten_init() {

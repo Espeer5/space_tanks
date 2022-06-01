@@ -20,6 +20,7 @@ typedef struct state {
 void key_handle(char key, key_event_type_t type, double held_time,
                 state_t *state) {
   if (type == KEY_PRESSED) {
+    body_t *proj;
     switch (key) {
     case LEFT_ARROW:
     body_set_rotation(scene_get_body(level_scene(state -> level), 0), M_PI / 2);
@@ -37,7 +38,10 @@ void key_handle(char key, key_event_type_t type, double held_time,
                         (vector_t){0, SHIP_VELOCITY1});
       break;
     case SPACE:
-      fire_user_weapon(level_scene(state -> level));
+      proj = fire_user_weapon(level_scene(state -> level));
+      for(size_t i = 0; i < scene_bodies(level_scene(state -> level)); i++) {
+        create_physics_collision(level_scene(state-> level), .8, proj, scene_get_body(level_scene(state -> level), i));
+      }
       break;
     case DOWN_ARROW:
       body_set_rotation(scene_get_body(level_scene(state -> level), 0), M_PI);
@@ -77,7 +81,10 @@ void mouse_handle(char button, key_event_type_t type, double mouse_x, double mou
       case 0:
         origin = body_get_centroid(scene_get_body(level_scene(state -> level), 0));
         body_set_rotation(scene_get_body(level_scene(state -> level), 0), determine_angle(origin, (vector_t) {mouse_x, mouse_y}));
-        fire_user_weapon(level_scene(state -> level));
+        body_t *proj = fire_user_weapon(level_scene(state -> level));
+        for(size_t i = 0; i < scene_bodies(level_scene(state -> level)); i++) {
+        create_physics_collision(level_scene(state-> level), .8, proj, scene_get_body(level_scene(state -> level), i));
+      }
       break;
     }
   }

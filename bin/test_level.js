@@ -205,7 +205,7 @@ Module['FS_createPath']("/levels", "level1", true, true);
     }
 
     }
-    loadPackage({"files": [{"filename": "/levels/level1/rocks.dat", "start": 0, "end": 175}, {"filename": "/levels/level1/enemy.dat", "start": 175, "end": 225}], "remote_package_size": 225, "package_uuid": "6b8084e5-e831-43b6-b9f2-29bcb90329bb"});
+    loadPackage({"files": [{"filename": "/levels/level1/rocks.dat", "start": 0, "end": 175}, {"filename": "/levels/level1/enemy.dat", "start": 175, "end": 225}], "remote_package_size": 225, "package_uuid": "9870df7d-2cd4-4037-b37a-448cb325ca1e"});
 
   })();
 
