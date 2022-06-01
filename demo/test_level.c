@@ -9,20 +9,13 @@
 
 const double XMAX = 2000;
 const double YMAX = 1000;
-const double STAR_RADIUS = 85;
-const size_t STAR_POINTS = 5;
-const double RED = 0;
-const double GREEN = .1;
-const double BLUE = 1;
-const rgb_color_t color = {0, .1, .1};
-const vector_t START = {250, 500};
-const vector_t initial_velo = {300, -200};
-const double omega = .05;
 const size_t BACK_STARS = 100;
 
 typedef struct state {
   level_t *level;
 } state_t;
+
+
 
 state_t *emscripten_init() {
   vector_t min = (vector_t){0, 0};

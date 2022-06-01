@@ -14,6 +14,66 @@
 const int MAX_LINE_LENGTH = 100;
 const int MAX_PROJ_PER_SHIP = 4;
 const vector_t ship_pos = {50, 50};
+const double STAR_RADIUS = 85;
+const size_t STAR_POINTS = 5;
+const double RED = 0;
+const double GREEN = .1;
+const double BLUE = 1;
+const rgb_color_t color = {0, .1, .1};
+const vector_t START = {250, 500};
+const vector_t initial_velo = {300, -200};
+const double omega = .05;
+const size_t shape_steps = 200;
+const double UFO_MASS = 2;
+const rgb_color_t UFO_COLOR = {1, 0, 0};
+const size_t UFO_COLUMNS = 4;
+const size_t UFO_ROWS = 1;
+const double SHIP_MASS = 2;
+const rgb_color_t SHIP_COLOR = {0, 0, 1};
+const double UFO_VELO = 300;
+const double PROJECTILE_MASS = 3;
+const rgb_color_t PROJECTILE_COLOR = {0, 1, 0};
+const double PROJECTILE_VELOCITY = 500;
+const double SHIP_VELOCITY = 300;
+const size_t NUM_ENEMIES = 24;
+const double PROJECTILE_OFFSET =
+    9; // How far from a body does its projectile spawn
+const double PROJECTILE_WIDTH = 6;
+const double UFO_WIDTH = 80;
+const double SHIP_WIDTH = 80;
+const double UFO_BUBBLE_UPPER_BOUND = 8.801;
+const double UFO_BUBBLE_WIDTH_CONSTANT = 3e8;
+const double UFO_SAUCER_WIDTH_CONSTANT = 300;
+const double UFO_LOWER_SAUCER_UPPER_BOUND = 14.618;
+const double UFO_LOWER_SAUCER_HEIGHT = 13.653;
+const double UFO_LOWER_SAUCER_WIDTH_CONSTANT = 10e18;
+const double UFO_LOWER_OFFSET = 18;
+const double UFO_UPPER_OFFSET = 20;
+const double UFO_WEAPON_WIDTH_CONSTANT = 3;
+const double UFO_WEAPON_OFFSET = 27;
+const double UFO_DOWN_TRANSLATION = 200;
+const double UFO_SPACING = 100;
+const double UFO_WEAPON_BOUND = 3;
+const double SHIP_COCKPIT_BOUND = 6.961;
+const double SHIP_COCKPIT_WIDTH_CONSTANT = 100;
+const double SHIP_WEAPON_BOUND = 21.579;
+const double SHIP_WEAPON_OUTSIDE_EDGE = 18.571;
+const double SHIP_WEAPON_WIDTH_CONSTANT = 10;
+const double SHIP_WEAPON_OFFSET = 20;
+const double SHIP_WEAPON_HEIGHT = 25;
+const double SHIP_WING_WIDTH_CONSTANT = .5;
+const double SHIP_WING_SLANT_BOUND = 5.6;
+const double SHIP_WING_SLANT_OUTER_BOUND = 28;
+const double SHIP_AIR_FOIL_WIDTH_CONSTANT = .25;
+const double SHIP_AIRFOIL_OFFSET = 7;
+const double UFO_WIDTH_SPACING = 70;
+const double UFO_HEIGHT = 60;
+const double ENEMY_FIRE_RATE_RAND_MAX = 1000;
+const double ENEMY_FIRE_RATE_CONTROL =
+    400; // Lower number to fire less frequently, higher to fire more frequenctly
+const size_t POSITION_APPROXIMATION_ORDER = 50;
+const double ANG_VAR = 0.1;
+
 
 /**
  * A generalization of scene to .
@@ -56,6 +116,56 @@ list_t *brick_init(vector_t bot_left, double brick_width, double brick_height) {
   return brick;
 }
 
+list_t *ship_init(vector_t origin) {
+  size_t steps = shape_steps;
+  double dx = SHIP_WIDTH / (float)steps;
+  double x = SHIP_WIDTH / 2;
+  list_t *ship = list_init(steps * 2, free);
+  for (size_t i = 0; i < steps; i++) {
+    vector_t *new_vec = malloc(sizeof(vector_t));
+    if (-SHIP_COCKPIT_BOUND < x && x < SHIP_COCKPIT_BOUND) {
+      *new_vec = (vector_t){
+          origin.x + x,
+          origin.y + ((-1 * pow(x, 4) / SHIP_COCKPIT_WIDTH_CONSTANT) +
+                      SHIP_WIDTH / 2)};
+    } else if (-SHIP_WEAPON_BOUND < x && x < -SHIP_WEAPON_OUTSIDE_EDGE) {
+      *new_vec = (vector_t){x + origin.x,
+                            origin.y + (-SHIP_WEAPON_WIDTH_CONSTANT *
+                                            fabs(x + SHIP_WEAPON_OFFSET) +
+                                        SHIP_WEAPON_HEIGHT)};
+    } else if (SHIP_WEAPON_OUTSIDE_EDGE < x && x < SHIP_WEAPON_BOUND) {
+      *new_vec = (vector_t){origin.x + x,
+                            origin.y + (-SHIP_WEAPON_WIDTH_CONSTANT *
+                                            fabs(x - SHIP_WEAPON_OFFSET) +
+                                        SHIP_WEAPON_HEIGHT)};
+    } else {
+      *new_vec = (vector_t){origin.x + x,
+                            origin.y + (-SHIP_WING_WIDTH_CONSTANT * fabs(x) +
+                                        SHIP_WEAPON_OFFSET)};
+    }
+    list_add(ship, new_vec);
+    x = x - dx;
+  }
+  x = -SHIP_WIDTH / 2;
+  for (size_t j = 0; j < steps; j++) {
+    vector_t *new_vec = malloc(sizeof(vector_t));
+    if (-SHIP_WING_SLANT_BOUND < x && x < SHIP_WING_SLANT_BOUND) {
+      *new_vec = (vector_t){origin.x + x, origin.y + fabs(x)};
+    } else if ((-SHIP_WING_SLANT_OUTER_BOUND < x &&
+                -SHIP_WING_SLANT_BOUND > x) ||
+               (SHIP_WING_SLANT_BOUND < x && x < SHIP_WING_SLANT_OUTER_BOUND)) {
+      *new_vec = (vector_t){
+          origin.x + x, origin.y + (-SHIP_AIR_FOIL_WIDTH_CONSTANT * fabs(x) +
+                                    SHIP_AIRFOIL_OFFSET)};
+    } else {
+      *new_vec = (vector_t){origin.x + x, origin.y};
+    }
+    list_add(ship, new_vec);
+    x = x + dx;
+  }
+  return ship;
+}
+
 void wall_creator(level_t *level, double XMAX, double YMAX){
     level -> walls = list_init(4, NULL);
     list_t *right_wall = brick_init((vector_t){XMAX, 0}, 1, YMAX);
@@ -79,18 +189,8 @@ void wall_creator(level_t *level, double XMAX, double YMAX){
 
 
 body_t *get_bodies_from_array(strarray *arr) {
-     list_t *vector_list = list_init(3, (void *)free);
-     vector_t *point1 = malloc(sizeof(vector_t));
-     *point1 = (vector_t) {strtod(arr -> data[0], NULL), strtod(arr ->data[1], NULL)};
-     list_add(vector_list, (void *) point1);
-     vector_t *point2 = malloc(sizeof(vector_t));
-     *point2 = (vector_t) {strtod(arr -> data[2], NULL), strtod(arr ->data[3], NULL)};
-     list_add(vector_list, (void *) point2);
-     vector_t *point3 = malloc(sizeof(vector_t));
-     *point3 = (vector_t) {strtod(arr -> data[4], NULL), strtod(arr ->data[5], NULL)};
-     list_add(vector_list, (void *) point3);
-     body_t *body1 = body_init(vector_list, 20, (rgb_color_t){0, 1, 1});
-     return body1;
+    body_t *enemy = body_init(ship_init((vector_t) {(double) atoi(arr -> data[0]), (double) atoi(arr -> data[1])}), SHIP_MASS, (rgb_color_t) {1, 0, 0});
+    return enemy;
  }
 
 strarray *get_split_line_from_file(FILE *f) {
@@ -150,7 +250,6 @@ level_t *level_init_from_folder(char *path, double XMAX, double YMAX) {
     double asteroid_center_y = 0;
     double asteroid_radius = 0;
     size_t num_sides = 0;
-    // level->scene = scene_init_fixed_size(100, 1, 1, 1);
     for (size_t i = 0; i < num_rocks; i++) {
         info = get_split_line_from_file(rocks_file);
         asteroid_center_x = atoi(info->data[0]);
@@ -180,13 +279,13 @@ level_t *level_init_from_folder(char *path, double XMAX, double YMAX) {
         list_add(level->rocks, asteroid_body);
     }
     wall_creator(level, XMAX, YMAX);
-    // for (size_t i = 0; i < list_size(level->dynamic_objs) ; i++){
-       //  body_t *body_i = list_get(level->dynamic_objs, i);
-        // for(size_t j = 0; j <list_size(level->walls); j++){
-              // body_t *body_j = list_get(level->walls, j);
-            // create_physics_collision(level->scene, 1, body_i, body_j);
-        // }
-    // }
+    for (size_t i = 0; i < num_dynamic; i++){
+        body_t *body_i = list_get(level->dynamic_objs, i);
+        for(size_t j = 0; j <list_size(level->walls); j++){
+              body_t *body_j = list_get(level->walls, j);
+            create_physics_collision(level->scene, 1, body_i, body_j);
+        }
+    }
     free_strarray(info);
     //TODO: add our ship
     return level;

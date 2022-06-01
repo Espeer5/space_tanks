@@ -1,10 +1,10 @@
 # List of demo programs
-DEMOS = spaceinvaders test_level #gravity pacman nbodies damping pegs breakout bounce
+DEMOS = test_level #gravity pacman nbodies damping pegs breakout bounce spaceinvaders 
 # List of C files in "libraries" that we provide
 STAFF_LIBS = test_util sdl_wrapper
 # List of C files in "libraries" that you will write.
 # This also defines the order in which the tests are run.
-STUDENT_LIBS = constants list vector polygon body weapon scene background forces collision utils level mystring
+STUDENT_LIBS = list vector polygon body weapon scene background forces collision utils level mystring
 
 # find <dir> is the command to find files in a directory
 # ! -name .gitignore tells find to ignore the .gitignore
