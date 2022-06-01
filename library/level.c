@@ -87,6 +87,7 @@ typedef struct level {
     list_t *walls;
     list_t *dynamic_objs;
     list_t *rocks;
+    body_t *user;
 } level_t;
 
 
@@ -166,6 +167,7 @@ list_t *ship_init(vector_t origin) {
   return ship;
 }
 
+
 void wall_creator(level_t *level, double XMAX, double YMAX){
     level -> walls = list_init(4, NULL);
     list_t *right_wall = brick_init((vector_t){XMAX, 0}, 1, YMAX);
@@ -224,8 +226,30 @@ FILE *helper_get_data(char*path, char* file_name) {
     return file;
 }
 
+list_t *projectile_init(vector_t base) {
+  list_t *projectile = list_init(4, free);
+  vector_t *vert1 = malloc(sizeof(vector_t));
+  *vert1 =
+      (vector_t){base.x - PROJECTILE_WIDTH / 2, base.y + PROJECTILE_OFFSET};
+  list_add(projectile, vert1);
+  vector_t *vert2 = malloc(sizeof(vector_t));
+  *vert2 =
+      (vector_t){base.x + PROJECTILE_WIDTH / 2, base.y + PROJECTILE_OFFSET};
+  list_add(projectile, vert2);
+  vector_t *vert3 = malloc(sizeof(vector_t));
+  *vert3 =
+      (vector_t){base.x + PROJECTILE_WIDTH / 2, base.y - PROJECTILE_OFFSET};
+  list_add(projectile, vert3);
+  vector_t *vert4 = malloc(sizeof(vector_t));
+  *vert4 =
+      (vector_t){base.x - PROJECTILE_WIDTH / 2, base.y - PROJECTILE_OFFSET};
+  list_add(projectile, vert4);
+  return projectile;
+}
+
 level_t *level_init_from_folder(char *path, double XMAX, double YMAX) {
     level_t *level = malloc(sizeof(level));
+    level -> user = body_init(ship_init(START), SHIP_MASS, SHIP_COLOR);
     FILE *enemy_file = helper_get_data(path, "/enemy.dat");
     FILE *rocks_file = helper_get_data(path, "/rocks.dat");
     strarray *info = get_split_line_from_file(enemy_file);
@@ -239,6 +263,9 @@ level_t *level_init_from_folder(char *path, double XMAX, double YMAX) {
     free_strarray(info);
     level->scene = scene_init_fixed_size(num_dynamic + num_rocks,
                                  num_dynamic * (num_dynamic), 1, 1);
+    scene_add_body(level -> scene, level -> user);
+    weapon_t *weapon1 = weapon_init((void *)projectile_init, PROJECTILE_VELOCITY, PROJECTILE_COLOR, PROJECTILE_MASS, level -> user);
+    add_user_weapon(level -> scene, weapon1, create_destructive_collision);
      for (size_t i = 0; i < num_ships - 1; i++) {
          info = get_split_line_from_file(enemy_file);
          body_t *new_body = get_bodies_from_array(info);
@@ -281,7 +308,7 @@ level_t *level_init_from_folder(char *path, double XMAX, double YMAX) {
     wall_creator(level, XMAX, YMAX);
     for (size_t i = 0; i < num_dynamic; i++){
         body_t *body_i = list_get(level->dynamic_objs, i);
-        for(size_t j = 0; j <list_size(level->walls); j++){
+        for(size_t j = 0; j < 4; j++){
               body_t *body_j = list_get(level->walls, j);
             create_physics_collision(level->scene, 1, body_i, body_j);
         }
@@ -313,15 +340,15 @@ list_t *level_predict(level_t *level, list_t *extras, size_t nsteps, double dt) 
 
 void level_tick(level_t *level, double dt) {
     scene_tick_forces(level->scene);
-    for (size_t i = list_size(level->dynamic_objs) - 1; i >= 0; i--) {
-        if (body_is_removed((body_t *) list_get(level->dynamic_objs, i))) {
-            list_remove(level->dynamic_objs, i);
-        }
-    }
-    for (size_t i = list_size(level->walls) - 1; i >= 0; i--) {
-        if (body_is_removed((body_t *) list_get(level->walls, i))) {
-            list_remove(level->walls, i);
-        }
-    }
+    // for (size_t i = list_size(level->dynamic_objs) - 1; i >= 0; i--) {
+        // if (body_is_removed((body_t *) list_get(level->dynamic_objs, i))) {
+            // list_remove(level->dynamic_objs, i);
+        // }
+    // }
+    // for (size_t i = list_size(level->walls) - 1; i >= 0; i--) {
+        // if (body_is_removed((body_t *) list_get(level->walls, i))) {
+            // list_remove(level->walls, i);
+        // }
+    // }
     scene_tick_after_forces(level->scene, dt);
 }

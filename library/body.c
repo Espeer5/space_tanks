@@ -5,6 +5,7 @@
 #include "vector.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <assert.h>
 
 struct body {
   vector_t velocity;
@@ -66,6 +67,7 @@ body_t *body_init_with_info(list_t *shape, double mass, rgb_color_t color,
   result->info_free = info_freer;
   result->shapes = list_init(5, (void *)shape_node_free);
   result -> base_shape = shape;
+  assert(result -> base_shape != NULL);
   shape_node_t *node = node_init(shape, color);
   result -> base_color = color;
   list_add(result -> shapes, node);
@@ -105,7 +107,10 @@ shape_node_t *copy_node(shape_node_t *node) {
 }
 
 list_t *body_get_base_shape(body_t *body) {
-  return vec_list_copy(body -> base_shape);
+  if(body -> base_shape != NULL) {
+    return vec_list_copy(body -> base_shape);
+  }
+  else return NULL;
 }
 
 list_t *body_get_shapes(body_t *body) {
