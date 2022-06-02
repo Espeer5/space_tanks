@@ -154,6 +154,7 @@ proj_forcer_t get_proj_force(scene_t *scene) {
   return ((weapon_node_t *)list_get(scene -> user_weapons, scene -> current_user_weapon)) -> force;
 }
 
+
 body_t *fire_user_weapon(scene_t *scene) {
   body_t *bod = gen_projectile(((weapon_node_t *)((list_get(scene -> user_weapons, scene -> current_user_weapon)))) -> weapon);
   scene_add_body(scene, bod);

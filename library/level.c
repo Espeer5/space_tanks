@@ -359,15 +359,5 @@ list_t *level_predict(level_t *level, list_t *extras, size_t nsteps, double dt) 
 
 void level_tick(level_t *level, double dt) {
     scene_tick_forces(level->scene);
-    // for (size_t i = list_size(level->dynamic_objs) - 1; i >= 0; i--) {
-        // if (body_is_removed((body_t *) list_get(level->dynamic_objs, i))) {
-            // list_remove(level->dynamic_objs, i);
-        // }
-    // }
-    // for (size_t i = list_size(level->walls) - 1; i >= 0; i--) {
-        // if (body_is_removed((body_t *) list_get(level->walls, i))) {
-            // list_remove(level->walls, i);
-        // }
-    // }
     scene_tick_after_forces(level->scene, dt);
 }

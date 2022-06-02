@@ -28,10 +28,34 @@ void free_weapon(weapon_t *weapon) {
   free(weapon);
 }
 
+list_t *proj_box_init(vector_t center, double width, double height) {
+    list_t *box = list_init(4, free);
+    vector_t point1 = {center.x - width/2, center.y + height/2};
+    vector_t point2 = {center.x + width/2, center.y + height/2};
+    vector_t point3 = {center.x + width/2, center.y - height/2};
+    vector_t point4 = {center.x - width/2, center.y - height/2};
+    vector_t *vec1 = malloc(sizeof(vector_t));
+    *vec1 = point1;
+    vector_t *vec2 = malloc(sizeof(vector_t));
+    *vec2 = point2;
+    vector_t *vec3 = malloc(sizeof(vector_t));
+    *vec3 = point3;
+    vector_t *vec4 = malloc(sizeof(vector_t));
+    *vec4 = point4;
+    list_add(box, vec1);
+    list_add(box, vec2);
+    list_add(box, vec3);
+    list_add(box, vec4);
+    return box;
+}
+
+
 body_t *gen_projectile(weapon_t *weapon) {
   char *info = malloc(11 * sizeof(char));
   strcpy(info, "projectile");
-  body_t *proj = body_init_with_info((weapon -> draw_proj)((vector_t) {body_get_centroid(weapon -> source).x + (PROJ_OFFSET * cos(body_get_angle(weapon -> source) + (M_PI / 2))), body_get_centroid(weapon -> source).y + (PROJ_OFFSET * sin(body_get_angle(weapon -> source) + (M_PI / 2)))}), weapon -> proj_mass, weapon -> proj_color, info, free);
+  list_t *proj_graph = (weapon -> draw_proj)((vector_t) {body_get_centroid(weapon -> source).x + (PROJ_OFFSET * cos(body_get_angle(weapon -> source) + (M_PI / 2))), body_get_centroid(weapon -> source).y + (PROJ_OFFSET * sin(body_get_angle(weapon -> source) + (M_PI / 2)))});
+  body_t *proj = body_init_with_info(proj_box_init((vector_t) {body_get_centroid(weapon -> source).x + (PROJ_OFFSET * cos(body_get_angle(weapon -> source) + (M_PI / 2))), body_get_centroid(weapon -> source).y + (PROJ_OFFSET * sin(body_get_angle(weapon -> source) + (M_PI / 2)))}, 10, 9), weapon -> proj_mass, (rgb_color_t) {0, 0, 0}, info, free);
+  body_add_shape(proj, proj_graph, weapon -> proj_color);
   body_set_rotation(proj, body_get_angle(weapon -> source));
   body_set_velocity(proj, (vector_t) {(weapon -> proj_velo) * cos(body_get_angle(weapon -> source) + (M_PI / 2)), (weapon -> proj_velo) * sin(body_get_angle(weapon -> source) + (M_PI / 2))});
   return proj;
