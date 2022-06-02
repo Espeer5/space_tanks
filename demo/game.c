@@ -8,6 +8,7 @@
 #include "utils.h"
 #include "forces.h"
 #include "scene.h"
+#include <unistd.h>
 
 const double XMAX = 2000;
 const double YMAX = 1000;
@@ -16,7 +17,7 @@ const double SHIP_VELOCITY1 = 200;
 
 typedef struct state {
   level_t *level;
-  size_t current_score;
+  double current_score;
   size_t current_level;
 } state_t;
 
@@ -104,6 +105,30 @@ void mouse_handle(char button, key_event_type_t type, double mouse_x, double mou
   }
 }
 
+void score_show() {
+
+}
+
+double score_check(state_t *state) {
+  char cwd[100];
+   if (getcwd(cwd, sizeof(cwd)) != NULL) {
+       printf("Current working dir: %s\n", cwd);
+   }
+  FILE *f = fopen("outputs/score.dat", "r+");
+  assert(f != NULL);
+  strarray *info = get_split_line_from_file(f);
+  double high_score = atoi(info -> data[0]);
+  free_strarray(info);
+  if(state -> current_score > high_score) {
+    char *score = malloc(2 * sizeof(char));
+    sprintf(score, "%f\n", state -> current_score);
+    printf("%s\n", score);
+    fwrite(score, 1, 2, f);
+  }
+  fclose(f);
+  return state -> current_score;
+}
+
 void mouse_follow(state_t *state) {
   vector_t origin = body_get_centroid(scene_get_body(level_scene(state -> level), 0));
   body_set_rotation(scene_get_body(level_scene(state -> level), 0), determine_angle(origin, (vector_t) {mouse_x(state), mouse_y(state)}));
@@ -129,6 +154,7 @@ void emscripten_main(state_t *state) {
   sdl_on_key(key_handle);
   sdl_render_scene(level_scene(state->level));
   level_tick(state -> level, time_since_last_tick());
+  score_check(state);
 }
 
 void emscripten_free(state_t *state) {

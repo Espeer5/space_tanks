@@ -6,6 +6,7 @@
 #include "scene.h"
 #include "utils.h"
 #include "sdl_wrapper.h"
+#include "mystring.h"
 
 /**
  * A generalization of scene to .
@@ -32,6 +33,8 @@ size_t level_rocks(level_t *level);
 scene_t *level_scene(level_t *level);
 
 list_t *level_get_rocks(level_t *level);
+
+strarray *get_split_line_from_file(FILE *f);
 
 mouse_handler_t *get_mouse_handle(level_t *level);
 

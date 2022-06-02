@@ -338,7 +338,8 @@ level_t *level_init_from_folder(char *path, double XMAX, double YMAX) {
             }
         }
     }
-    //TODO: add our ship
+    fclose(enemy_file);
+    fclose(rocks_file);
     return level;
 }
 
