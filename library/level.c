@@ -32,7 +32,8 @@ const size_t UFO_ROWS = 1;
 const double SHIP_MASS = 2;
 const rgb_color_t SHIP_COLOR = {0, 0, 1};
 const double UFO_VELO = 300;
-const double PROJECTILE_MASS = 3;
+const double PROJECTILE_MASS = 0.01;
+const double ASTEROID_MASS = 1;
 const rgb_color_t PROJECTILE_COLOR = {0, 1, 0};
 const double PROJECTILE_VELOCITY = 1000;
 const double SHIP_VELOCITY = 925;
@@ -304,7 +305,7 @@ level_t *level_init_from_folder(char *path, double XMAX, double YMAX) {
         list_t *asteroid = asteroid_outline_init(asteroid_center, asteroid_radius, num_sides);
         char *info = malloc(5 * sizeof(char));
         strcpy(info, "rock");
-        body_t *asteroid_body = body_init_with_info(box_init(asteroid_center, asteroid_radius * cos(M_PI/num_sides), asteroid_radius * cos(M_PI/num_sides)), PROJECTILE_MASS, (rgb_color_t){1, 1, 1}, info, free);
+        body_t *asteroid_body = body_init_with_info(box_init(asteroid_center, asteroid_radius * cos(M_PI/num_sides), asteroid_radius * cos(M_PI/num_sides)), ASTEROID_MASS, (rgb_color_t){1, 1, 1}, info, free);
         body_add_shape(asteroid_body, asteroid, (rgb_color_t){.5, .5, .5});
         vector_t dimple_center = body_get_centroid(asteroid_body);
         double dimples_radius = asteroid_radius / 2;

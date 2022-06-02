@@ -16,6 +16,11 @@ const double XMAX = 2000;
 const double YMAX = 1000;
 const size_t BACK_STARS = 100;
 const double SHIP_VELOCITY1 = 200;
+const double ENEMY_VELO = 50;
+const double WALL_GAP = 50;
+const double WALL_FORCE = 100;
+const size_t POSITION_APPROXIMATION_ORDER = 10;
+const double ANG_VAR = 0.1;
 
 typedef struct state {
   level_t *level;
@@ -112,10 +117,10 @@ void score_show() {
 }
 
 double score_check(state_t *state, char *path) {
-  char cwd[100];
+  char cwd[100];/*
    if (getcwd(cwd, sizeof(cwd)) != NULL) {
        printf("Current working dir: %s\n", cwd);
-   }
+   }*/
   //printf("%s", path);
   FILE *f = fopen(path, "r+");
   assert(f != NULL);
@@ -137,6 +142,92 @@ void mouse_follow(state_t *state) {
   body_set_rotation(scene_get_body(level_scene(state -> level), 0), determine_angle(origin, (vector_t) {mouse_x(state), mouse_y(state)}));
 }
 
+void shoot_as_ai(state_t *state, body_t *enemy) {
+  // Goes to arbitrary order to approximate this, but 1-2 is probably enough
+  scene_t *scene = level_scene(state->level);
+  body_t *player = scene_get_body(scene, 0);
+  vector_t gap = vec_subtract(body_get_centroid(enemy),
+                        body_get_centroid(player));
+  double dt = sqrt(vec_dot(gap, gap)) / PROJECTILE_VELOCITY;
+  for (size_t i = 1; i < POSITION_APPROXIMATION_ORDER; i++) {
+    vector_t new_player_position = vec_add(body_get_centroid(player), 
+              vec_multiply(dt * 0.5, body_get_velocity(player)));
+    gap = vec_subtract(body_get_centroid(enemy),
+                        new_player_position);
+    dt = sqrt(vec_dot(gap, gap)) / PROJECTILE_VELOCITY;                    
+  }
+  double angle = atan2(-gap.y, -gap.x);
+  angle += (rand() / RAND_MAX) * ANG_VAR;
+
+  vector_t cent = body_get_centroid(enemy);
+  add_enemy_projectile(vec_add(cent, vec_multiply(PROJECTILE_OFFSET,
+    (vector_t){cos(angle), sin(angle)})), state);
+  body_set_rotation(enemy, angle + M_PI / 2);
+  body_t *projectile = scene_get_body(scene, scene_bodies(scene) - 1);
+  body_set_velocity(projectile, vec_multiply(PROJECTILE_VELOCITY,
+                    (vector_t){cos(angle), sin(angle)}));
+  body_set_rotation(projectile, angle - M_PI / 2);
+  create_destructive_collision(
+      scene, scene_get_body(scene, 0), projectile);
+}
+
+vector_t scale_flee(vector_t vec) {
+  double norm = sqrt(vec_dot(vec, vec));
+  return vec_multiply(pow(norm, -3), vec);
+}
+
+vector_t wall_push(vector_t pos) {
+  vector_t push = VEC_ZERO;
+  if (pos.x > XMAX - WALL_GAP) {
+    push = vec_add(push, (vector_t) {-WALL_FORCE, 0});
+  }
+  if (pos.x <  WALL_GAP) {
+    push = vec_add(push, (vector_t) {WALL_FORCE, 0});
+  }
+  if (pos.y > YMAX - WALL_GAP) {
+    push = vec_add(push, (vector_t) {0, -WALL_FORCE});
+  }
+  if (pos.y < WALL_GAP) {
+    push = vec_add(push, (vector_t) {0, WALL_FORCE});
+  }
+  return push;
+}
+
+void dodge(state_t *state, body_t *enemy) {
+  vector_t ecent = body_get_centroid(enemy);
+  vector_t total_push = wall_push(ecent);
+  for (size_t i = 0; i < level_bodies(state->level); i++) {
+    body_t *body = scene_get_body(level_scene(state->level), i);
+    vector_t gap = vec_subtract(ecent, body_get_centroid(body));
+    vector_t velo = body_get_velocity(body);
+    double vmag = sqrt(vec_dot(velo, velo));
+    // normalize velocity for convenience
+    // Maybe need a sense of urgency?
+    velo = vec_multiply(1 / vmag, velo);
+    if (vec_dot(velo, gap) > 0) { // object approaching
+      double gmag = sqrt(vec_dot(gap, gap));
+      // Get perpendicular component
+      vector_t closest = vec_subtract(gap, vec_multiply(vec_dot(velo, gap), velo));
+      total_push = vec_add(total_push, vec_multiply(vmag, scale_flee(closest)));
+    }
+  }
+  double total_push_mag = sqrt(vec_dot(total_push, total_push));
+  if (total_push_mag > 0) {
+    body_set_velocity(enemy, vec_multiply(ENEMY_VELO / total_push_mag, total_push));
+  }
+  else body_set_velocity(enemy, VEC_ZERO);
+}
+
+void play_AI(state_t *state) {
+  for (size_t i = 0; i < level_bodies(state->level); i++) {
+    scene_t *scene = level_scene(state->level);
+    if (!strcmp((char *)body_get_info(scene_get_body(scene, i)),
+                    "alien")) {
+      dodge(state, scene_get_body(scene, i));
+    }
+  }
+}
+
 state_t *emscripten_init() {
   vector_t min = (vector_t){0, 0};
   vector_t max = (vector_t){XMAX, YMAX};
@@ -151,6 +242,16 @@ state_t *emscripten_init() {
   return state;
 }
 
+void body_cleanup(state_t *state) {
+  for (size_t i = 0; i < level_bodies(state->level); i++) {
+    body_t *body = scene_get_body(level_scene(state->level), i);
+    vector_t cent = body_get_centroid(body);
+    if (cent.x > 2 * XMAX || cent.x < -XMAX || cent.y > 2 * YMAX || cent.y < -YMAX) {
+      scene_remove_body(level_scene(state->level), i);
+    }
+  }
+}
+
 void emscripten_main(state_t *state) {
   mouse_follow(state);
   sdl_on_click(mouse_handle);
@@ -158,6 +259,8 @@ void emscripten_main(state_t *state) {
   sdl_render_scene(level_scene(state->level));
   level_tick(state -> level, time_since_last_tick());
   score_check(state, "/outputs/score.dat");
+  play_AI(state);
+  body_cleanup(state);
 }
 
 void emscripten_free(state_t *state) {
