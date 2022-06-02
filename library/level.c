@@ -32,11 +32,11 @@ const size_t UFO_ROWS = 1;
 const double SHIP_MASS = 2;
 const rgb_color_t SHIP_COLOR = {0, 0, 1};
 const double UFO_VELO = 300;
-const double PROJECTILE_MASS = 0.01;
+const double PROJECTILE_MASS = 5;
 const double ASTEROID_MASS = 1;
 const rgb_color_t PROJECTILE_COLOR = {0, 1, 0};
 const double PROJECTILE_VELOCITY = 1000;
-const size_t NUM_ENEMIES = 24;
+const size_t NUM_ENEMIES = 5;
 const double PROJECTILE_OFFSET =
     9; // How far from a body does its projectile spawn
 const double PROJECTILE_WIDTH = 6;
@@ -261,6 +261,26 @@ list_t *projectile_init(vector_t base) {
   return projectile;
 }
 
+void shoot_as_ai(level_t *level, size_t enemy_num) {
+  // Goes to arbitrary order to approximate this, but 1-2 is probably enough
+  scene_t *scene = level_scene(level);
+  body_t *player = level -> user;
+  vector_t gap = vec_subtract(body_get_centroid(scene_get_body(level_scene(level), enemy_num)),
+                        body_get_centroid(player));
+  double dt = sqrt(vec_dot(gap, gap)) / PROJECTILE_VELOCITY;
+  for (size_t i = 1; i < POSITION_APPROXIMATION_ORDER; i++) {
+    vector_t new_player_position = vec_add(body_get_centroid(player), 
+              vec_multiply(dt * 0.5, body_get_velocity(player)));
+    gap = vec_subtract(body_get_centroid(scene_get_body(level_scene(level), enemy_num)),
+                        new_player_position);
+    dt = sqrt(vec_dot(gap, gap)) / PROJECTILE_VELOCITY;                    
+  }
+  double angle = atan2(-gap.y, -gap.x);
+  angle += (rand() / RAND_MAX) * ANG_VAR;
+  body_set_rotation(scene_get_body(level_scene(level), enemy_num), angle + M_PI / 2);
+  fire_enemy_weapon(scene, enemy_num);
+}
+
 level_t *level_init_from_folder(char *path, double XMAX, double YMAX) {
     level_t *level = malloc(sizeof(level));
     list_t *user_ship = ship_init(START);
@@ -287,6 +307,8 @@ level_t *level_init_from_folder(char *path, double XMAX, double YMAX) {
          info = get_split_line_from_file(enemy_file);
          body_t *new_body = get_bodies_from_array(info);
          scene_add_body(level->scene, new_body);
+         weapon_t *w = weapon_init((void *)projectile_init, PROJECTILE_VELOCITY, (rgb_color_t) {1, 0, 0}, PROJECTILE_MASS, new_body);
+         add_enemy_weapon(level_scene(level), w, create_destructive_collision);
          list_add(level->dynamic_objs, (void *) new_body);
          free_strarray(info);
      }

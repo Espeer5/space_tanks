@@ -10,17 +10,14 @@
 #include "scene.h"
 #include <unistd.h>
 #include <stdio.h>
-#include <stdlib.h>
 
 const double XMAX = 2000;
 const double YMAX = 1000;
 const size_t BACK_STARS = 100;
-const double SHIP_VELOCITY1 = 200;
-const double ENEMY_VELO = 50;
+const double SHIP_VELOCITY1 = 500;
+const double ENEMY_VELO = 400;
 const double WALL_GAP = 50;
 const double WALL_FORCE = 100;
-const size_t POSITION_APPROXIMATION_ORDER = 10;
-const double ANG_VAR = 0.1;
 
 typedef struct state {
   level_t *level;
@@ -117,61 +114,12 @@ double get_score(state_t *state) {
   return (size_t)(state -> current_score);
 }
 
-double score_check(state_t *state, char *path) {
-  char cwd[100];/*
-   if (getcwd(cwd, sizeof(cwd)) != NULL) {
-       printf("Current working dir: %s\n", cwd);
-   }*/
-  //printf("%s", path);
-  FILE *f = fopen(path, "r+");
-  assert(f != NULL);
-  strarray *info = get_split_line_from_file(f);
-  double high_score = atoi(info -> data[0]);
-  free_strarray(info);
-  if(state -> current_score > high_score) {
-    char *score = malloc(2 * sizeof(char));
-    sprintf(score, "%f\n", state -> current_score);
-    printf("%s\n", score);
-    fwrite(score, 1, 2, f);
-  }
-  fclose(f);
-  return state -> current_score;
-}
-
 
 void mouse_follow(state_t *state) {
   vector_t origin = body_get_centroid(scene_get_body(level_scene(state -> level), 0));
   body_set_rotation(scene_get_body(level_scene(state -> level), 0), determine_angle(origin, (vector_t) {mouse_x(state), mouse_y(state)}));
 }
 
-void shoot_as_ai(state_t *state, body_t *enemy) {
-  // Goes to arbitrary order to approximate this, but 1-2 is probably enough
-  scene_t *scene = level_scene(state->level);
-  body_t *player = scene_get_body(scene, 0);
-  vector_t gap = vec_subtract(body_get_centroid(enemy),
-                        body_get_centroid(player));
-  double dt = sqrt(vec_dot(gap, gap)) / PROJECTILE_VELOCITY;
-  for (size_t i = 1; i < POSITION_APPROXIMATION_ORDER; i++) {
-    vector_t new_player_position = vec_add(body_get_centroid(player), 
-              vec_multiply(dt * 0.5, body_get_velocity(player)));
-    gap = vec_subtract(body_get_centroid(enemy),
-                        new_player_position);
-    dt = sqrt(vec_dot(gap, gap)) / PROJECTILE_VELOCITY;                    
-  }
-  double angle = atan2(-gap.y, -gap.x);
-  angle += (rand() / RAND_MAX) * ANG_VAR;
-
-  vector_t cent = body_get_centroid(enemy);
-  add_enemy_projectile(vec_add(cent, vec_multiply(PROJECTILE_OFFSET,
-    (vector_t){cos(angle), sin(angle)})), state);
-  body_set_rotation(enemy, angle + M_PI / 2);
-  body_t *projectile = scene_get_body(scene, scene_bodies(scene) - 1);
-  body_set_velocity(projectile, vec_multiply(PROJECTILE_VELOCITY,
-                    (vector_t){cos(angle), sin(angle)}));
-  body_set_rotation(projectile, angle - M_PI / 2);
-  create_destructive_collision(
-      scene, scene_get_body(scene, 0), projectile);
-}
 
 vector_t scale_flee(vector_t vec) {
   double norm = sqrt(vec_dot(vec, vec));
@@ -235,7 +183,7 @@ state_t *emscripten_init() {
   vector_t max = (vector_t){XMAX, YMAX};
   sdl_init(min, max);
   state_t *state = malloc(sizeof(state_t));
-  state -> level = level_init_from_folder("/levels/level2", XMAX, YMAX);
+  state -> level = level_init_from_folder("/levels/level3", XMAX, YMAX);
   state -> current_level = (size_t) 1;
   state -> current_score = 0;
   printf("Welcome to Space Force, The Game!\nControls:\n   Click to rotate and shoot\n   Space: Quick fire\n   Arrow Keys: Maneuver Ship\n   Number keys 1-3: Change weapons\n   S: Check score\n\n Current Score: %zu\n", (size_t) get_score(state));
@@ -260,8 +208,8 @@ void emscripten_main(state_t *state) {
   sdl_on_key(key_handle);
   sdl_render_scene(level_scene(state->level));
   level_tick(state -> level, time_since_last_tick());
-  score_check(state, "/outputs/score.dat");
   play_AI(state);
+  shoot_as_ai(state -> level, 2);
   body_cleanup(state);
 }
 

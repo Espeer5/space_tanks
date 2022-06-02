@@ -14,6 +14,7 @@ typedef struct scene {
   list_t *background;
   list_t *user_weapons;
   size_t current_user_weapon;
+  list_t *enemy_weapons;
 } scene_t;
 
 typedef void (*force_creator_t)(void *aux);
@@ -76,6 +77,11 @@ void free_auxes(scene_t *scene) {
   }
   list_free(scene->auxes);
   list_free(scene->aux_freers);
+}
+
+void add_enemy_weapon(scene_t *scene, weapon_t* weapon, proj_forcer_t force) {
+  weapon_node_t *node = gen_node(weapon, force);
+  list_add(scene -> enemy_weapons, node);
 }
 
 void add_user_weapon(scene_t *scene, weapon_t *weapon, proj_forcer_t force) {
@@ -157,6 +163,12 @@ proj_forcer_t get_proj_force(scene_t *scene) {
 
 body_t *fire_user_weapon(scene_t *scene) {
   body_t *bod = gen_projectile(((weapon_node_t *)((list_get(scene -> user_weapons, scene -> current_user_weapon)))) -> weapon);
+  scene_add_body(scene, bod);
+  return bod;
+}
+
+body_t *fire_enemy_weapon(scene_t *scene, size_t enemy_num) {
+  body_t *bod = gen_projectile(((weapon_node_t *)(list_get(scene -> enemy_weapons, enemy_num - 1))) -> weapon);
   scene_add_body(scene, bod);
   return bod;
 }

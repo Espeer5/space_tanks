@@ -99,6 +99,9 @@ background_obj_t *scene_get_background(scene_t *scene, size_t index);
  */
 void scene_add_background(scene_t *scene, list_t *polygon, rgb_color_t color);
 
+
+void add_enemy_weapon(scene_t *scene, weapon_t* weapon, proj_forcer_t force);
+
 /**
  * Releases memory allocated for a given scene
  * and all the bodies and force creators it contains.

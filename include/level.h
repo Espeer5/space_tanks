@@ -61,6 +61,11 @@ level_t *level_init_from_folder(char *path, double XMAX, double YMAX);
  */
 void level_free(level_t *level);
 
+
+body_t *fire_enemy_weapon(scene_t *scene, size_t enemy_num);
+
+void shoot_as_ai(level_t *level, size_t enemy_num);
+
 /**
  * Gets the number of bodies in a given scene.
  *
