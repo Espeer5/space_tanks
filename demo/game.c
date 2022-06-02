@@ -15,12 +15,16 @@
 const double XMAX = 2000;
 const double YMAX = 1000;
 const size_t BACK_STARS = 100;
+<<<<<<< HEAD
 const double SHIP_VELOCITY1 = 200;
 const double ENEMY_VELO = 50;
 const double WALL_GAP = 50;
 const double WALL_FORCE = 100;
 const size_t POSITION_APPROXIMATION_ORDER = 10;
 const double ANG_VAR = 0.1;
+=======
+const double SHIP_VELOCITY1 = 500;
+>>>>>>> 5ede38fe7f749b0aec36ebf8837ccdeb5bcc8129
 
 typedef struct state {
   level_t *level;
@@ -49,6 +53,7 @@ void key_handle(char key, key_event_type_t type, double held_time,
                         (vector_t){0, SHIP_VELOCITY1});
       break;
     case SPACE:
+      state -> current_score += 1;
       proj = fire_user_weapon(level_scene(state -> level));
       scene_t *scene = level_scene(state -> level);
       for (size_t i = 1; i < scene_bodies(scene); i++) {
@@ -112,10 +117,11 @@ void mouse_handle(char button, key_event_type_t type, double mouse_x, double mou
   }
 }
 
-void score_show() {
-
+double get_score(state_t *state) {
+  return (size_t)(state -> current_score);
 }
 
+<<<<<<< HEAD
 double score_check(state_t *state, char *path) {
   char cwd[100];/*
    if (getcwd(cwd, sizeof(cwd)) != NULL) {
@@ -135,7 +141,12 @@ double score_check(state_t *state, char *path) {
   }
   fclose(f);
   return state -> current_score;
+=======
+void score_show(state_t *state, char *path) {
+  printf("%zu\n", (size_t)(state -> current_score));
+>>>>>>> 5ede38fe7f749b0aec36ebf8837ccdeb5bcc8129
 }
+
 
 void mouse_follow(state_t *state) {
   vector_t origin = body_get_centroid(scene_get_body(level_scene(state -> level), 0));
@@ -236,7 +247,7 @@ state_t *emscripten_init() {
   state -> level = level_init_from_folder("/levels/level2", XMAX, YMAX);
   state -> current_level = (size_t) 1;
   state -> current_score = 0;
-  printf("Welcome to Space Force, The Game!\nControls:\n   Click to rotate and shoot\n   Space: Quick fire\n   Arrow Keys: Maneuver Ship\n   Number keys 1-3: Change weapons\n");
+  printf("Welcome to Space Force, The Game!\nControls:\n   Click to rotate and shoot\n   Space: Quick fire\n   Arrow Keys: Maneuver Ship\n   Number keys 1-3: Change weapons\n   S: Check score\n\n Current Score: %zu\n", (size_t) get_score(state));
   scene_add_body(level_scene(state->level), body_init(make_square(), 1, (rgb_color_t) {1,0,0}));
   generate_back_stars(level_scene(state -> level), BACK_STARS, XMAX, YMAX);
   return state;
@@ -258,9 +269,12 @@ void emscripten_main(state_t *state) {
   sdl_on_key(key_handle);
   sdl_render_scene(level_scene(state->level));
   level_tick(state -> level, time_since_last_tick());
+<<<<<<< HEAD
   score_check(state, "/outputs/score.dat");
   play_AI(state);
   body_cleanup(state);
+=======
+>>>>>>> 5ede38fe7f749b0aec36ebf8837ccdeb5bcc8129
 }
 
 void emscripten_free(state_t *state) {
