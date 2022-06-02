@@ -116,6 +116,7 @@ double score_check(state_t *state, char *path) {
    if (getcwd(cwd, sizeof(cwd)) != NULL) {
        printf("Current working dir: %s\n", cwd);
    }
+  //printf("%s", path);
   FILE *f = fopen(path, "r+");
   assert(f != NULL);
   strarray *info = get_split_line_from_file(f);
