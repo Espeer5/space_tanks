@@ -121,7 +121,6 @@ double get_score(state_t *state) {
   return (size_t)(state -> current_score);
 }
 
-<<<<<<< HEAD
 double score_check(state_t *state, char *path) {
   char cwd[100];/*
    if (getcwd(cwd, sizeof(cwd)) != NULL) {
@@ -141,10 +140,6 @@ double score_check(state_t *state, char *path) {
   }
   fclose(f);
   return state -> current_score;
-=======
-void score_show(state_t *state, char *path) {
-  printf("%zu\n", (size_t)(state -> current_score));
->>>>>>> 5ede38fe7f749b0aec36ebf8837ccdeb5bcc8129
 }
 
 
@@ -269,12 +264,9 @@ void emscripten_main(state_t *state) {
   sdl_on_key(key_handle);
   sdl_render_scene(level_scene(state->level));
   level_tick(state -> level, time_since_last_tick());
-<<<<<<< HEAD
   score_check(state, "/outputs/score.dat");
   play_AI(state);
   body_cleanup(state);
-=======
->>>>>>> 5ede38fe7f749b0aec36ebf8837ccdeb5bcc8129
 }
 
 void emscripten_free(state_t *state) {
