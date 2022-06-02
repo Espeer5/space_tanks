@@ -34,7 +34,7 @@ const rgb_color_t SHIP_COLOR = {0, 0, 1};
 const double UFO_VELO = 300;
 const double PROJECTILE_MASS = 3;
 const rgb_color_t PROJECTILE_COLOR = {0, 1, 0};
-const double PROJECTILE_VELOCITY = 300;
+const double PROJECTILE_VELOCITY = 1000;
 const double SHIP_VELOCITY = 850;
 const size_t NUM_ENEMIES = 24;
 const double PROJECTILE_OFFSET =
@@ -177,13 +177,35 @@ list_t *ship_init(vector_t origin) {
   return ship;
 }
 
+list_t *box_init(vector_t center, double width, double height) {
+    list_t *box = list_init(4, free);
+    vector_t point1 = {center.x - width/2, center.y + height/2};
+    vector_t point2 = {center.x + width/2, center.y + height/2};
+    vector_t point3 = {center.x + width/2, center.y - height/2};
+    vector_t point4 = {center.x - width/2, center.y - height/2};
+    vector_t *vec1 = malloc(sizeof(vector_t));
+    *vec1 = point1;
+    vector_t *vec2 = malloc(sizeof(vector_t));
+    *vec2 = point2;
+    vector_t *vec3 = malloc(sizeof(vector_t));
+    *vec3 = point3;
+    vector_t *vec4 = malloc(sizeof(vector_t));
+    *vec4 = point4;
+    list_add(box, vec1);
+    list_add(box, vec2);
+    list_add(box, vec3);
+    list_add(box, vec4);
+    return box;
+}
 
 
 
 body_t *get_bodies_from_array(strarray *arr) {
     char *info = malloc(6 * sizeof(char));
     strcpy(info, "alien");
-    body_t *enemy = body_init_with_info(ship_init((vector_t) {(double) atoi(arr -> data[0]), (double) atoi(arr -> data[1])}), SHIP_MASS, (rgb_color_t) {1, 0, 0}, info, free);
+    list_t *bod_graphics = ship_init((vector_t) {(double) atoi(arr -> data[0]), (double) atoi(arr -> data[1])});
+    body_t *enemy = body_init_with_info(box_init((vector_t) {(double) atoi(arr -> data[0]), (double) atoi(arr -> data[1])}, SHIP_WIDTH/1.5, SHIP_WIDTH/1.5), SHIP_MASS, (rgb_color_t) {0, 0, 0}, info, free);
+    body_add_shape(enemy, bod_graphics, (rgb_color_t) {1, 0, 0});
     return enemy;
  }
 
@@ -241,7 +263,9 @@ list_t *projectile_init(vector_t base) {
 
 level_t *level_init_from_folder(char *path, double XMAX, double YMAX) {
     level_t *level = malloc(sizeof(level));
-    body_t *user_bod = body_init(ship_init(START), SHIP_MASS, SHIP_COLOR);
+    list_t *user_ship = ship_init(START);
+    body_t *user_bod = body_init(box_init(START, SHIP_WIDTH/1.5, SHIP_WIDTH/1.5), SHIP_MASS, (rgb_color_t) {0, 0, 0});
+    body_add_shape(user_bod, user_ship, SHIP_COLOR);
     level -> user = user_bod;
     FILE *enemy_file = helper_get_data(path, "/enemy.dat");
     FILE *rocks_file = helper_get_data(path, "/rocks.dat");
@@ -280,7 +304,9 @@ level_t *level_init_from_folder(char *path, double XMAX, double YMAX) {
         list_t *asteroid = asteroid_outline_init(asteroid_center, asteroid_radius, num_sides);
         char *info = malloc(5 * sizeof(char));
         strcpy(info, "rock");
-        body_t *asteroid_body = body_init_with_info(asteroid, PROJECTILE_MASS, (rgb_color_t){.5, .5, .5}, info, free);
+        printf("%f\n", asteroid_radius * cos(M_PI/num_sides));
+        body_t *asteroid_body = body_init_with_info(box_init(asteroid_center, asteroid_radius * cos(M_PI/num_sides), asteroid_radius * cos(M_PI/num_sides)), PROJECTILE_MASS, (rgb_color_t){1, 1, 1}, info, free);
+        body_add_shape(asteroid_body, asteroid, (rgb_color_t){.5, .5, .5});
         vector_t dimple_center = body_get_centroid(asteroid_body);
         double dimples_radius = asteroid_radius / 2;
         double dimple_radius = asteroid_radius / 15;
