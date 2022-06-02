@@ -9,6 +9,8 @@
 #include "forces.h"
 #include "scene.h"
 #include <unistd.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 const double XMAX = 2000;
 const double YMAX = 1000;
@@ -109,12 +111,12 @@ void score_show() {
 
 }
 
-double score_check(state_t *state) {
+double score_check(state_t *state, char *path) {
   char cwd[100];
    if (getcwd(cwd, sizeof(cwd)) != NULL) {
        printf("Current working dir: %s\n", cwd);
    }
-  FILE *f = fopen("outputs/score.dat", "r+");
+  FILE *f = fopen(path, "r+");
   assert(f != NULL);
   strarray *info = get_split_line_from_file(f);
   double high_score = atoi(info -> data[0]);
@@ -154,7 +156,7 @@ void emscripten_main(state_t *state) {
   sdl_on_key(key_handle);
   sdl_render_scene(level_scene(state->level));
   level_tick(state -> level, time_since_last_tick());
-  score_check(state);
+  // score_check(state, "/outputs/score.dat");
 }
 
 void emscripten_free(state_t *state) {
