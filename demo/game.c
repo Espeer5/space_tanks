@@ -16,8 +16,9 @@ const double SHIP_VELOCITY1 = 200;
 
 typedef struct state {
   level_t *level;
+  size_t current_score;
+  size_t current_level;
 } state_t;
-
 
 void key_handle(char key, key_event_type_t type, double held_time,
                 state_t *state) {
@@ -108,7 +109,10 @@ state_t *emscripten_init() {
   vector_t max = (vector_t){XMAX, YMAX};
   sdl_init(min, max);
   state_t *state = malloc(sizeof(state_t));
-  state -> level = level_init_from_folder("/levels/level3", XMAX, YMAX);
+  state -> level = level_init_from_folder("/levels/level2", XMAX, YMAX);
+  state -> current_level = (size_t) 1;
+  state -> current_score = 0;
+  printf("Welcome to Space Force, The Game!\nControls:\n   Click to rotate and shoot\n   Space: Quick fire\n   Arrow Keys: Maneuver Ship\n   Number keys 1-3: Change weapons\n");
   scene_add_body(level_scene(state->level), body_init(make_square(), 1, (rgb_color_t) {1,0,0}));
   generate_back_stars(level_scene(state -> level), BACK_STARS, XMAX, YMAX);
   return state;

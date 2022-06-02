@@ -35,7 +35,7 @@ const double UFO_VELO = 300;
 const double PROJECTILE_MASS = 3;
 const rgb_color_t PROJECTILE_COLOR = {0, 1, 0};
 const double PROJECTILE_VELOCITY = 1000;
-const double SHIP_VELOCITY = 850;
+const double SHIP_VELOCITY = 925;
 const size_t NUM_ENEMIES = 24;
 const double PROJECTILE_OFFSET =
     9; // How far from a body does its projectile spawn
@@ -304,7 +304,6 @@ level_t *level_init_from_folder(char *path, double XMAX, double YMAX) {
         list_t *asteroid = asteroid_outline_init(asteroid_center, asteroid_radius, num_sides);
         char *info = malloc(5 * sizeof(char));
         strcpy(info, "rock");
-        printf("%f\n", asteroid_radius * cos(M_PI/num_sides));
         body_t *asteroid_body = body_init_with_info(box_init(asteroid_center, asteroid_radius * cos(M_PI/num_sides), asteroid_radius * cos(M_PI/num_sides)), PROJECTILE_MASS, (rgb_color_t){1, 1, 1}, info, free);
         body_add_shape(asteroid_body, asteroid, (rgb_color_t){.5, .5, .5});
         vector_t dimple_center = body_get_centroid(asteroid_body);
@@ -332,6 +331,11 @@ level_t *level_init_from_folder(char *path, double XMAX, double YMAX) {
         body_t *rock = list_get(level -> rocks, t);
         for(size_t l = 0; l < list_size(level -> dynamic_objs); l++) {
             create_destructive_collision(level -> scene, rock, list_get(level -> dynamic_objs, l));
+        }
+        for(size_t x = 0; x < list_size(level -> rocks); x++) {
+            if(x != t) {
+                create_physics_collision(level -> scene, .8, rock, list_get(level -> rocks, x));
+            }
         }
     }
     //TODO: add our ship
