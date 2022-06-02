@@ -15,16 +15,12 @@
 const double XMAX = 2000;
 const double YMAX = 1000;
 const size_t BACK_STARS = 100;
-<<<<<<< HEAD
 const double SHIP_VELOCITY1 = 200;
 const double ENEMY_VELO = 50;
 const double WALL_GAP = 50;
 const double WALL_FORCE = 100;
 const size_t POSITION_APPROXIMATION_ORDER = 10;
 const double ANG_VAR = 0.1;
-=======
-const double SHIP_VELOCITY1 = 500;
->>>>>>> 5ede38fe7f749b0aec36ebf8837ccdeb5bcc8129
 
 typedef struct state {
   level_t *level;
