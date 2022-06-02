@@ -157,7 +157,7 @@ void emscripten_main(state_t *state) {
   sdl_on_key(key_handle);
   sdl_render_scene(level_scene(state->level));
   level_tick(state -> level, time_since_last_tick());
-  // score_check(state, "/outputs/score.dat");
+  score_check(state, "/outputs/score.dat");
 }
 
 void emscripten_free(state_t *state) {
