@@ -35,7 +35,6 @@ const double UFO_VELO = 300;
 const double PROJECTILE_MASS = 3;
 const rgb_color_t PROJECTILE_COLOR = {0, 1, 0};
 const double PROJECTILE_VELOCITY = 1000;
-const double SHIP_VELOCITY = 925;
 const size_t NUM_ENEMIES = 24;
 const double PROJECTILE_OFFSET =
     9; // How far from a body does its projectile spawn

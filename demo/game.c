@@ -15,7 +15,7 @@
 const double XMAX = 2000;
 const double YMAX = 1000;
 const size_t BACK_STARS = 100;
-const double SHIP_VELOCITY1 = 200;
+const double SHIP_VELOCITY1 = 500;
 
 typedef struct state {
   level_t *level;
@@ -44,6 +44,7 @@ void key_handle(char key, key_event_type_t type, double held_time,
                         (vector_t){0, SHIP_VELOCITY1});
       break;
     case SPACE:
+      state -> current_score += 1;
       proj = fire_user_weapon(level_scene(state -> level));
       scene_t *scene = level_scene(state -> level);
       for (size_t i = 1; i < scene_bodies(scene); i++) {
@@ -107,30 +108,14 @@ void mouse_handle(char button, key_event_type_t type, double mouse_x, double mou
   }
 }
 
-void score_show() {
-
+double get_score(state_t *state) {
+  return (size_t)(state -> current_score);
 }
 
-double score_check(state_t *state, char *path) {
-  char cwd[100];
-   if (getcwd(cwd, sizeof(cwd)) != NULL) {
-       printf("Current working dir: %s\n", cwd);
-   }
-  //printf("%s", path);
-  FILE *f = fopen(path, "r+");
-  assert(f != NULL);
-  strarray *info = get_split_line_from_file(f);
-  double high_score = atoi(info -> data[0]);
-  free_strarray(info);
-  if(state -> current_score > high_score) {
-    char *score = malloc(2 * sizeof(char));
-    sprintf(score, "%f\n", state -> current_score);
-    printf("%s\n", score);
-    fwrite(score, 1, 2, f);
-  }
-  fclose(f);
-  return state -> current_score;
+void score_show(state_t *state, char *path) {
+  printf("%zu\n", (size_t)(state -> current_score));
 }
+
 
 void mouse_follow(state_t *state) {
   vector_t origin = body_get_centroid(scene_get_body(level_scene(state -> level), 0));
@@ -145,7 +130,7 @@ state_t *emscripten_init() {
   state -> level = level_init_from_folder("/levels/level2", XMAX, YMAX);
   state -> current_level = (size_t) 1;
   state -> current_score = 0;
-  printf("Welcome to Space Force, The Game!\nControls:\n   Click to rotate and shoot\n   Space: Quick fire\n   Arrow Keys: Maneuver Ship\n   Number keys 1-3: Change weapons\n");
+  printf("Welcome to Space Force, The Game!\nControls:\n   Click to rotate and shoot\n   Space: Quick fire\n   Arrow Keys: Maneuver Ship\n   Number keys 1-3: Change weapons\n   S: Check score\n\n Current Score: %zu\n", (size_t) get_score(state));
   scene_add_body(level_scene(state->level), body_init(make_square(), 1, (rgb_color_t) {1,0,0}));
   generate_back_stars(level_scene(state -> level), BACK_STARS, XMAX, YMAX);
   return state;
@@ -157,7 +142,6 @@ void emscripten_main(state_t *state) {
   sdl_on_key(key_handle);
   sdl_render_scene(level_scene(state->level));
   level_tick(state -> level, time_since_last_tick());
-  score_check(state, "/outputs/score.dat");
 }
 
 void emscripten_free(state_t *state) {
