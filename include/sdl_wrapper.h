@@ -55,6 +55,10 @@ typedef void (*mouse_handler_t)(char button, key_event_type_t type, double mouse
  */
 void sdl_init(vector_t min, vector_t max);
 
+double mouse_x(state_t *state);
+
+double mouse_y(state_t *state);
+
 /**
  * Processes all SDL events and returns whether the window has been closed.
  * This function must be called in order to handle keypresses.

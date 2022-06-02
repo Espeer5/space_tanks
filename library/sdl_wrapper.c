@@ -9,8 +9,8 @@
 #include "body.h"
 
 const char WINDOW_TITLE[] = "BLOW THINGS UP HERE";
-const int WINDOW_WIDTH = 1000;
-const int WINDOW_HEIGHT = 500;
+const int WINDOW_WIDTH = 1150;
+const int WINDOW_HEIGHT = 575;
 const double MS_PER_S = 1e3;
 
 /**
@@ -107,6 +107,22 @@ char get_keycode(SDL_Keycode key) {
     // Only process 7-bit ASCII characters
     return key == (SDL_Keycode)(char)key ? key : '\0';
   }
+}
+
+double mouse_x(state_t *state) {
+  int mouse_x;
+  int mouse_y;
+  double scale = get_scene_scale(get_window_center());
+  SDL_GetMouseState(&mouse_x, &mouse_y);
+  return mouse_x / scale;
+}
+
+double mouse_y(state_t *state) {
+  int mouse_x;
+  int mouse_y;
+  double scale = get_scene_scale(get_window_center());
+  SDL_GetMouseState(&mouse_x, &mouse_y);
+  return mouse_y / scale;
 }
 
 void sdl_init(vector_t min, vector_t max) {

@@ -104,6 +104,11 @@ void mouse_handle(char button, key_event_type_t type, double mouse_x, double mou
   }
 }
 
+void mouse_follow(state_t *state) {
+  vector_t origin = body_get_centroid(scene_get_body(level_scene(state -> level), 0));
+  body_set_rotation(scene_get_body(level_scene(state -> level), 0), determine_angle(origin, (vector_t) {mouse_x(state), mouse_y(state)}));
+}
+
 state_t *emscripten_init() {
   vector_t min = (vector_t){0, 0};
   vector_t max = (vector_t){XMAX, YMAX};
@@ -119,6 +124,7 @@ state_t *emscripten_init() {
 }
 
 void emscripten_main(state_t *state) {
+  mouse_follow(state);
   sdl_on_click(mouse_handle);
   sdl_on_key(key_handle);
   sdl_render_scene(level_scene(state->level));
