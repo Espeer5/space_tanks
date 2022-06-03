@@ -39,17 +39,17 @@ void key_handle(char key, key_event_type_t type, double held_time,
   if (type == KEY_PRESSED) {
     body_t *proj;
     switch (key) {
-    case LEFT_ARROW:
+    case 'a':
     body_set_rotation(scene_get_body(level_scene(state -> level), 0), M_PI / 2);
       body_set_velocity(scene_get_body(level_scene(state -> level), 0),
                         (vector_t){-SHIP_VELOCITY1, 0});
       break;
-    case RIGHT_ARROW:
+    case 'd':
       body_set_rotation(scene_get_body(level_scene(state -> level), 0),  3 * M_PI / 2);
       body_set_velocity(scene_get_body(level_scene(state -> level), 0),
                         (vector_t){SHIP_VELOCITY1, 0});
       break;
-    case UP_ARROW:
+    case 'w':
       body_set_rotation(scene_get_body(level_scene(state -> level), 0), 0);
       body_set_velocity(scene_get_body(level_scene(state -> level), 0),
                         (vector_t){0, SHIP_VELOCITY1});
@@ -66,15 +66,15 @@ void key_handle(char key, key_event_type_t type, double held_time,
         else create_physics_collision(scene, .7, proj, scene_get_body(scene, i));
       }
       break;
-    case DOWN_ARROW:
+    case 's':
       body_set_rotation(scene_get_body(level_scene(state -> level), 0), M_PI);
       body_set_velocity(scene_get_body(level_scene(state -> level), 0),
                         (vector_t){0, -SHIP_VELOCITY1});
       break;
-    case 's':
+    case 'c':
       check_score(state);
       break;
-    case  'w':
+    case  'v':
       change_user_weapon(level_scene(state -> level));
     }
   }
@@ -213,7 +213,7 @@ state_t *emscripten_init() {
   state -> current_level = (size_t) 1;
   state -> current_score = 0;
   state -> lives = 3;
-  printf("Welcome to Space Force, The Game!\nControls:\n   Click to rotate and shoot\n   Space: Quick fire\n   Arrow Keys: Maneuver Ship\n   W: Change weapons\n   S: Check score\n\n Current Score: %zu\n", (size_t) get_score(state));
+  printf("Welcome to Space Force, The Game!\nControls:\n   Click to rotate and shoot\n   Space: Quick fire\n   a/w/s/d: Maneuver Ship\n   v Change weapons\n   c: Check score\n\n Current Score: %zu\n", (size_t) get_score(state));
   generate_back_stars(level_scene(state -> level), BACK_STARS, XMAX, YMAX);
   return state;
 }
