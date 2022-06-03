@@ -256,7 +256,7 @@ list_t *projectile_init(vector_t base) {
 void shoot_as_ai(level_t *level, size_t enemy_num) {
   // Goes to arbitrary order to approximate this, but 1-2 is probably enough
   scene_t *scene = level_scene(level);
-  body_t *player = level -> user;
+  body_t *player = scene_get_body(level_scene(level), 0);
   vector_t gap = vec_subtract(body_get_centroid(scene_get_body(level_scene(level), enemy_num)),
                         body_get_centroid(player));
   double dt = sqrt(vec_dot(gap, gap)) / PROJECTILE_VELOCITY;
@@ -269,8 +269,9 @@ void shoot_as_ai(level_t *level, size_t enemy_num) {
   }
   double angle = atan2(-gap.y, -gap.x);
   angle += ((double) rand() / RAND_MAX) * ANG_VAR;
-  body_set_rotation(scene_get_body(level_scene(level), enemy_num), angle + M_PI / 2);
-  fire_enemy_weapon(scene, enemy_num);
+  body_set_rotation(scene_get_body(level_scene(level), enemy_num), angle - M_PI / 2);
+  body_t *en_proj = fire_enemy_weapon(scene, enemy_num);
+  create_destructive_collision(level_scene(level), scene_get_body(level_scene(level), 0), en_proj);
 }
 
 level_t *level_init_from_folder(char *path, double XMAX, double YMAX) {

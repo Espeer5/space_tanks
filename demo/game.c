@@ -15,7 +15,7 @@ const double XMAX = 2000;
 const double YMAX = 1000;
 const size_t BACK_STARS = 100;
 const double SHIP_VELOCITY1 = 500;
-const double ENEMY_VELO = 400;
+const double ENEMY_VELO = 100;
 const double WALL_GAP = 50;
 const double WALL_FORCE = 100;
 
