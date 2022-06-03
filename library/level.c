@@ -315,6 +315,9 @@ void int_ship(level_t *level) {
     add_user_weapon(level -> scene, weapon1, create_destructive_collision);
     weapon_t *weapon2 = weapon_init((void *)shuriken_init, PROJECTILE_VELOCITY, PROJECTILE_COLOR, PROJECTILE_MASS, level -> user);
     add_user_weapon(level -> scene, weapon2, create_destructive_collision);
+    for(size_t j = 0; j < scene_bodies(level -> scene); j++) {
+        create_physics_collision(level -> scene, .8, user_bod, scene_get_body(level -> scene, j));
+    }
 }
 
 level_t *level_init_from_folder(char *path, double XMAX, double YMAX) {

@@ -210,7 +210,7 @@ state_t *emscripten_init() {
   sdl_init(min, max);
   state_t *state = malloc(sizeof(state_t));
   state -> level = level_init_from_folder("/levels/level1", XMAX, YMAX);
-  state -> current_level = (size_t) 1;
+  state -> current_level = 1;
   state -> current_score = 0;
   state -> lives = 3;
   printf("Welcome to Space Force, The Game!\nControls:\n   Click to rotate and shoot\n   Space: Quick fire\n   a/w/s/d: Maneuver Ship\n   v Change weapons\n   c: Check score\n\n Current Score: %zu\n", (size_t) get_score(state));
@@ -266,6 +266,12 @@ void advance_level(state_t *state) {
 }
 
 void emscripten_main(state_t *state) {
+  if(strcmp(body_get_info(scene_get_body(level_scene(state -> level), 0)), "ship")) {
+    handle_lose(state);
+  }
+  if(strcmp(body_get_info(scene_get_body(level_scene(state -> level), 1)), "alien")) {
+    advance_level(state);
+  }
   mouse_follow(state);
   sdl_on_click(mouse_handle);
   sdl_on_key(key_handle);
@@ -277,12 +283,6 @@ void emscripten_main(state_t *state) {
   ship_position.y = loop_position(ship_position.y, 0, YMAX);
   body_set_centroid(scene_get_body(level_scene(state -> level), 0), (vector_t) {ship_position.x, ship_position.y});
   body_cleanup(state);
-  if(strcmp(body_get_info(scene_get_body(level_scene(state -> level), 0)), "ship")) {
-    handle_lose(state);
-  }
-  if(strcmp(body_get_info(scene_get_body(level_scene(state -> level), 1)), "alien")) {
-    advance_level(state);
-  }
 }
 
 void emscripten_free(state_t *state) {
