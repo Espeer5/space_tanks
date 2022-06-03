@@ -110,6 +110,15 @@ Game!!
 
 **RESOURCES USED:** Edward Speer.
 
+## Thursday June 2 12:00 pm - 8:00 pm 
+**WHO:** Eli
+
+**WHAT:** So much random stuff, debugging, improving and implementing proper AI, attempting to resolve very strange errors. 
+
+**BUGS:** None. 
+
+**RESOURCES USED:** None
+
 ## Thursday June 2 10:00 pm - 12:00 am
 **WHO:** Jack, Eddie
 
