@@ -161,11 +161,8 @@ void dodge(state_t *state, body_t *enemy) {
     vector_t gap = vec_subtract(ecent, body_get_centroid(body));
     vector_t velo = body_get_velocity(body);
     double vmag = sqrt(vec_dot(velo, velo));
-    // normalize velocity for convenience
-    // Maybe need a sense of urgency?
     velo = vec_multiply(1 / vmag, velo);
-    if (vec_dot(velo, gap) > 0) { // object approaching
-      // Get perpendicular component
+    if (vec_dot(velo, gap) > 0) {
       vector_t closest = vec_subtract(gap, vec_multiply(vec_dot(velo, gap), velo));
       total_push = vec_add(total_push, vec_multiply(vmag, scale_flee(closest)));
     }

@@ -34,6 +34,13 @@ body_t *body_init(list_t *shape, double mass, rgb_color_t color);
  */
 list_t *node_get_shape(shape_node_t *node);
 
+
+/**
+ * @brief Returns the shape associated with a shape-node in order to draw a polygon associated with a body
+ * 
+ * @param node 
+ * @return rgb_color_t 
+ */
 rgb_color_t node_get_color(shape_node_t *node);
 
 /**
@@ -217,6 +224,13 @@ void body_remove(body_t *body);
  */
 bool body_is_removed(body_t *body);
 
+
+/**
+ * @brief Returns a newly malloced copy of a particular body
+ * 
+ * @param body 
+ * @return body_t* 
+ */
 body_t *body_copy(body_t *body);
 
 #endif // #ifndef __BODY_H__

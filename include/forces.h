@@ -88,6 +88,16 @@ void create_collision(scene_t *scene, body_t *body1, body_t *body2,
  */
 void create_destructive_collision(scene_t *scene, body_t *body1, body_t *body2);
 
+
+/**
+ * @brief Get the impulse associated with a collision with the given elasticity between two bodies of specified masses and velocities
+ * 
+ * @param body1 
+ * @param body2 
+ * @param axis 
+ * @param elasticity 
+ * @return vector_t 
+ */
 vector_t get_impulse(body_t *body1, body_t *body2, vector_t axis,
                      double elasticity);
 

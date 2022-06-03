@@ -17,23 +17,29 @@
  */
 typedef struct level level_t;
 
-size_t num_enemies(level_t *level);
-
+/**
+ * @brief Returns the number of asteroids present in a given level
+ * 
+ * @param level 
+ * @return size_t 
+ */
 size_t level_rocks(level_t *level);
 
+/**
+ * @brief Returns the scene stored in the level
+ * 
+ * @param level 
+ * @return scene_t* 
+ */
 scene_t *level_scene(level_t *level);
 
-list_t *level_get_rocks(level_t *level);
-
+/**
+ * @brief Reads in a line from a file and splits it at all spaces into a string array 
+ * 
+ * @param f 
+ * @return strarray* 
+ */
 strarray *get_split_line_from_file(FILE *f);
-
-mouse_handler_t *get_mouse_handle(level_t *level);
-
-void set_mouse_handle(level_t *level, mouse_handler_t *handler);
-
-key_handler_t *get_key_handler(level_t *level);
-
-void set_key_handler(level_t *level, key_handler_t *handler);
 
 /**
  * Allocates memory for a level based on folders in the path.
@@ -52,11 +58,28 @@ level_t *level_init_from_folder(char *path, double XMAX, double YMAX);
  */
 void level_free(level_t *level);
 
-
+/**
+ * @brief Fires the weapon inluded in the level's scene for the given number enemy
+ * 
+ * @param scene 
+ * @param enemy_num 
+ * @return body_t* 
+ */
 body_t *fire_enemy_weapon(scene_t *scene, size_t enemy_num);
 
+/**
+ * @brief Animates an enemy ship included in the level to fire a projectile at the user
+ * 
+ * @param level 
+ * @param enemy_num 
+ */
 void shoot_as_ai(level_t *level, size_t enemy_num);
 
+/**
+ * @brief Reinitializes the user ship and all user weapons whwnwver the player loses a life
+ * 
+ * @param level 
+ */
 void int_ship(level_t *level);
 
 /**
@@ -66,8 +89,6 @@ void int_ship(level_t *level);
  * @return the number of bodies added with scene_add_body()
  */
 size_t level_bodies(level_t *level);
-
-level_t *get_asteroid_info(char *path);
 
 /**
  * Adds a dyanmic body to a level.

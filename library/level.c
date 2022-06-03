@@ -83,8 +83,6 @@ typedef struct level {
     scene_t *scene;
     list_t *dynamic_objs;
     list_t *rocks;
-    key_handler_t *key_handle;
-    mouse_handler_t *mouse_handle;
     body_t *user;
 } level_t;
 
@@ -96,27 +94,6 @@ scene_t *level_scene(level_t *level) {
 size_t level_rocks(level_t *level) {
     return list_size(level -> rocks);
 }
-
-list_t *level_get_rocks(level_t *level) {
-    return level -> rocks;
-}
-
-void set_key_handler(level_t *level, key_handler_t *handler) {
-    level -> key_handle = handler;
-}
-
-key_handler_t *get_key_handler(level_t *level) {
-    return level -> key_handle;
-}
-
-void set_mouse_handle(level_t *level, mouse_handler_t *handler) {
-    level -> mouse_handle = handler;
-}
-
-mouse_handler_t *get_mouse_handle(level_t *level) {
-    return level -> mouse_handle;
-}
-
 
 list_t *ship_init(vector_t origin) {
   size_t steps = shape_steps;
@@ -400,24 +377,21 @@ level_t *level_init_from_folder(char *path, double XMAX, double YMAX) {
         double dimple_angle = (2 * M_PI) / num_dimples;
         double angle = 0;
         for (size_t i = 0; i < num_dimples; i++){
-            dimples_radius = asteroid_radius * ((double) rand() / RAND_MAX);
             dimple_x = dimple_center.x + (dimples_radius * cos(angle));
             dimple_y = dimple_center.y + (dimples_radius * sin(angle));
-            // dimple_center = (vector_t) {dimple_x, dimple_y};
             list_t *dimple = dimple_init((vector_t) {dimple_x, dimple_y}, dimple_radius);
             body_add_shape(asteroid_body, dimple, (rgb_color_t){.2, .2, .2});
             angle = angle + dimple_angle; 
         }
         scene_add_body(level->scene, asteroid_body);
-        create_physics_collision(level -> scene, 1, asteroid_body, level->user);
         list_add(level->rocks, asteroid_body);
     }
     free_strarray(info);
     for(size_t t = 0; t < list_size(level -> rocks); t++) {
         body_t *rock = list_get(level -> rocks, t);
-        for(size_t x = 0; x < list_size(level -> rocks); x++) {
+        for(size_t x = 0; x < scene_bodies(level -> scene); x++) {
             if(x != t) {
-                create_physics_collision(level -> scene, .8, rock, list_get(level -> rocks, x));
+                create_physics_collision(level -> scene, .8, rock, scene_get_body(level -> scene, x));
             }
         }
     }
@@ -440,10 +414,6 @@ void level_add_dynamic_body(level_t *level, body_t *body) {
     scene_add_body(level->scene, body);
 }
 
-list_t *level_predict(level_t *level, list_t *extras, size_t nsteps, double dt) {
-    // This might be WAY WAY too slow to be practical, but I have hope
-    return NULL;
-}
 
 void level_tick(level_t *level, double dt) {
     scene_tick_forces(level->scene);
