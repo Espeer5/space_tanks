@@ -83,7 +83,7 @@ Game!!
 
 **RESOURCES USED:** None
 
-## Sunday May May 24 8:00 pm - 12:00 pm
+## Sunday May May 24 8:00 pm - 12:00 am
 **WHO:** Ryan
 
 **WHAT:** Used Eddie's struct implementation to create sprites so that the asteroids can have dimples to add more detail to the level design. 
@@ -109,3 +109,12 @@ Game!!
 **BUGS:** Out of order code. 
 
 **RESOURCES USED:** Edward Speer.
+
+## Thursday June 2 10:00 pm - 12:00 am
+**WHO:** Jack, Eddie
+
+**WHAT:** Implemented win/loss conditions. Created message for losing, if you beat all levels you get an extra life. 
+
+**BUGS:** None. 
+
+**RESOURCES USED:** None
