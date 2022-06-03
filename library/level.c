@@ -76,12 +76,12 @@ const size_t POSITION_APPROXIMATION_ORDER = 50;
 const double ANG_VAR = 0.1;
 
 typedef struct level {
-    body_t *user;
     scene_t *scene;
     list_t *dynamic_objs;
     list_t *rocks;
     key_handler_t *key_handle;
     mouse_handler_t *mouse_handle;
+    body_t *user;
 } level_t;
 
 
@@ -321,7 +321,7 @@ void int_ship(level_t *level) {
 }
 
 level_t *level_init_from_folder(char *path, double XMAX, double YMAX) {
-    level_t *level = malloc(sizeof(level));
+    level_t *level = malloc(sizeof(level_t));
     list_t *user_ship = ship_init(START);
     char *info1 = malloc(5 * sizeof(char));
     strcpy(info1, "ship");

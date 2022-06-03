@@ -127,3 +127,12 @@ Game!!
 **BUGS:** None. 
 
 **RESOURCES USED:** None
+
+## Friday June 3 1:00 pm - 3:00 pm
+**WHO:** Eli
+
+**WHAT:** AAAAAAAAA debugging
+
+**BUGS:** Weird memory things randomly, because I used level instead of level_t 
+
+**RESOURCES USED:** None
