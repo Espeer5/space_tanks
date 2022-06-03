@@ -76,10 +76,10 @@ const size_t POSITION_APPROXIMATION_ORDER = 50;
 const double ANG_VAR = 0.1;
 
 typedef struct level {
+    body_t *user;
     scene_t *scene;
     list_t *dynamic_objs;
     list_t *rocks;
-    body_t *user;
     key_handler_t *key_handle;
     mouse_handler_t *mouse_handle;
 } level_t;
@@ -219,7 +219,7 @@ strarray *get_split_line_from_file(FILE *f) {
 
 
 FILE *helper_get_data(char*path, char* file_name) {
-    char* abs_path = malloc(sizeof(char) * (strlen(path) + 11));
+    char* abs_path = malloc(sizeof(char) * (strlen(path) + strlen(file_name) + 1));
     strcpy(abs_path, path);
     strcat(abs_path, file_name);
     FILE *file = fopen(abs_path, "r");
