@@ -187,6 +187,7 @@ body_t *fire_user_weapon(scene_t *scene) {
 body_t *fire_enemy_weapon(scene_t *scene, size_t enemy_num) {
   body_t *bod = gen_projectile(((weapon_node_t *)(list_get(scene -> enemy_weapons, enemy_num - 1))) -> weapon);
   scene_add_body(scene, bod);
+  body_set_velocity(bod, vec_multiply(-1, body_get_velocity(bod)));
   return bod;
 }
 

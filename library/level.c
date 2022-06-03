@@ -18,6 +18,10 @@ const vector_t ship_pos = {50, 50};
 const double STAR_RADIUS = 85;
 const size_t STAR_POINTS = 5;
 const double RED = 0;
+const size_t CAN_POINTS = 50;
+const double CAN_RAD = 20;
+const double CAN_MASS = 50;
+const double CAN_VELO = 500;
 const double GREEN = .1;
 const double BLUE = 1;
 const rgb_color_t color = {0, .1, .1};
@@ -301,6 +305,18 @@ list_t *shuriken_init(vector_t center) {
   return star;
 }
 
+list_t *canon_init(vector_t center) {
+  list_t *c = list_init(CAN_POINTS, free);
+  for (size_t i = 0; i < CAN_POINTS; i++) {
+    double angle = i * ((2 * M_PI ) / CAN_POINTS);
+    vector_t *v = malloc(sizeof(vector_t));
+    *v = (vector_t){center.x + (CAN_RAD * cos(angle)),
+                    center.y + (CAN_RAD * sin(angle))};
+    list_add(c, v);
+  }
+  return c;
+}
+
 void int_ship(level_t *level) {
     list_t *user_ship = ship_init(START);
     char *info1 = malloc(5 * sizeof(char));
@@ -314,7 +330,9 @@ void int_ship(level_t *level) {
     weapon_t *weapon1 = weapon_init((void *)projectile_init, PROJECTILE_VELOCITY, PROJECTILE_COLOR, PROJECTILE_MASS, level -> user);
     add_user_weapon(level -> scene, weapon1, create_destructive_collision);
     weapon_t *weapon2 = weapon_init((void *)shuriken_init, PROJECTILE_VELOCITY, PROJECTILE_COLOR, PROJECTILE_MASS, level -> user);
+    weapon_t *weapon3 = weapon_init((void *)canon_init, CAN_VELO, PROJECTILE_COLOR, CAN_MASS, level -> user);
     add_user_weapon(level -> scene, weapon2, create_destructive_collision);
+    add_user_weapon(level -> scene, weapon3, create_destructive_collision);
     for(size_t j = 0; j < scene_bodies(level -> scene); j++) {
         create_physics_collision(level -> scene, .8, user_bod, scene_get_body(level -> scene, j));
     }
@@ -344,8 +362,10 @@ level_t *level_init_from_folder(char *path, double XMAX, double YMAX) {
     scene_add_body(level -> scene, level -> user);
     weapon_t *weapon1 = weapon_init((void *)projectile_init, PROJECTILE_VELOCITY, PROJECTILE_COLOR, PROJECTILE_MASS, level -> user);
     weapon_t *weapon2 = weapon_init((void *)shuriken_init, PROJECTILE_VELOCITY, PROJECTILE_COLOR, PROJECTILE_MASS, level -> user);
+    weapon_t *weapon3 = weapon_init((void *)canon_init, CAN_VELO, PROJECTILE_COLOR, CAN_MASS, level -> user);
     add_user_weapon(level -> scene, weapon1, create_destructive_collision);
     add_user_weapon(level -> scene, weapon2, create_destructive_collision);
+    add_user_weapon(level -> scene, weapon3, create_destructive_collision);
      for (size_t i = 0; i < num_ships - 1; i++) {
          info = get_split_line_from_file(enemy_file);
          body_t *new_body = get_bodies_from_array(info);

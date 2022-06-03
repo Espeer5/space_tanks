@@ -184,7 +184,7 @@ void play_AI(state_t *state) {
     if (!strcmp((char *)body_get_info(scene_get_body(scene, i)),
                     "alien")) {
       dodge(state, scene_get_body(scene, i));
-      if (gen_rand(0, 1000) > 950) {
+      if (gen_rand(0, 1000) > 985) {
         shoot_as_ai(state->level, counter);
       }
       counter++;
