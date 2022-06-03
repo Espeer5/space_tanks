@@ -274,10 +274,55 @@ void shoot_as_ai(level_t *level, size_t enemy_num) {
   }
 }
 
+list_t *shuriken_init(vector_t center) {
+  double d_angle = (M_PI / 6);
+  double total_angle = 0;
+  size_t counter = 2;
+  double scaler = sin(M_PI / (2 * 6)) /
+                  sin(((6 - 3) * M_PI) / 6);
+  list_t *star = list_init(2 * 6, free);
+  for (size_t i = 0; i < 2 * 6; i++) {
+    total_angle = total_angle + d_angle;
+    vector_t *new_vec_pointer = malloc(sizeof(vector_t));
+    assert(new_vec_pointer != NULL);
+    if (counter % 2) {
+      *new_vec_pointer =
+          (vector_t){center.x - (10 * scaler * cos(total_angle)),
+                     center.y - (10 * scaler * sin(total_angle))};
+
+    } else {
+      *new_vec_pointer =
+          (vector_t){center.x - (10 * cos(total_angle)),
+                     center.y - (10 * sin(total_angle))};
+    }
+    list_add(star, new_vec_pointer);
+    counter++;
+  }
+  return star;
+}
+
+void int_ship(level_t *level) {
+    list_t *user_ship = ship_init(START);
+    char *info1 = malloc(5 * sizeof(char));
+    strcpy(info1, "ship");
+    body_t *user_bod = body_init_with_info(box_init(START, SHIP_WIDTH/1.5, SHIP_WIDTH/1.5), SHIP_MASS, (rgb_color_t) {0, 0, 0}, info1, free);
+    body_add_shape(user_bod, user_ship, SHIP_COLOR);
+    level -> user = user_bod;
+    scene_add_front(level -> scene, user_bod);
+    wipe_weapons(level_scene(level));
+    rearm(level_scene(level));
+    weapon_t *weapon1 = weapon_init((void *)projectile_init, PROJECTILE_VELOCITY, PROJECTILE_COLOR, PROJECTILE_MASS, level -> user);
+    add_user_weapon(level -> scene, weapon1, create_destructive_collision);
+    weapon_t *weapon2 = weapon_init((void *)shuriken_init, PROJECTILE_VELOCITY, PROJECTILE_COLOR, PROJECTILE_MASS, level -> user);
+    add_user_weapon(level -> scene, weapon2, create_destructive_collision);
+}
+
 level_t *level_init_from_folder(char *path, double XMAX, double YMAX) {
     level_t *level = malloc(sizeof(level));
     list_t *user_ship = ship_init(START);
-    body_t *user_bod = body_init(box_init(START, SHIP_WIDTH/1.5, SHIP_WIDTH/1.5), SHIP_MASS, (rgb_color_t) {0, 0, 0});
+    char *info1 = malloc(5 * sizeof(char));
+    strcpy(info1, "ship");
+    body_t *user_bod = body_init_with_info(box_init(START, SHIP_WIDTH/1.5, SHIP_WIDTH/1.5), SHIP_MASS, (rgb_color_t) {0, 0, 0}, info1, free);
     body_add_shape(user_bod, user_ship, SHIP_COLOR);
     level -> user = user_bod;
     FILE *enemy_file = helper_get_data(path, "/enemy.dat");
@@ -295,7 +340,9 @@ level_t *level_init_from_folder(char *path, double XMAX, double YMAX) {
                                  num_dynamic * (num_dynamic), 1, 1);
     scene_add_body(level -> scene, level -> user);
     weapon_t *weapon1 = weapon_init((void *)projectile_init, PROJECTILE_VELOCITY, PROJECTILE_COLOR, PROJECTILE_MASS, level -> user);
+    weapon_t *weapon2 = weapon_init((void *)shuriken_init, PROJECTILE_VELOCITY, PROJECTILE_COLOR, PROJECTILE_MASS, level -> user);
     add_user_weapon(level -> scene, weapon1, create_destructive_collision);
+    add_user_weapon(level -> scene, weapon2, create_destructive_collision);
      for (size_t i = 0; i < num_ships - 1; i++) {
          info = get_split_line_from_file(enemy_file);
          body_t *new_body = get_bodies_from_array(info);

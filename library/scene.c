@@ -152,6 +152,18 @@ void scene_add_force_creator(scene_t *scene, force_creator_t forcer, void *aux,
   scene_add_bodies_force_creator(scene, forcer, aux, list_init(0, NULL), freer);
 }
 
+void scene_add_front(scene_t *scene, body_t *bod) {
+  add_at(scene->bodies, bod, 0);
+}
+
+void wipe_weapons(scene_t *scene) {
+  list_free(scene -> user_weapons);
+}
+
+void rearm(scene_t *scene) {
+  scene -> user_weapons = list_init(3, (void *)free_weapon_node);
+}
+
 void scene_add_bodies_force_creator(scene_t *scene, force_creator_t forcer,
                                     void *aux, list_t *bodies,
                                     free_func_t freer) {

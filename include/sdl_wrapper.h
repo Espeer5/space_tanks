@@ -15,7 +15,7 @@ typedef enum {
   RIGHT_ARROW = 3,
   UP_ARROW = 5,
   MOUSE = 6,
-  DOWN_ARROW = 4
+  DOWN_ARROW = 4,
 } arrow_key_t;
 
 /**

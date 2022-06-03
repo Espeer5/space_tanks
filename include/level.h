@@ -57,6 +57,8 @@ body_t *fire_enemy_weapon(scene_t *scene, size_t enemy_num);
 
 void shoot_as_ai(level_t *level, size_t enemy_num);
 
+void int_ship(level_t *level);
+
 /**
  * Gets the number of bodies in a given scene.
  *

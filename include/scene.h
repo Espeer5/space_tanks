@@ -64,6 +64,12 @@ void add_user_weapon(scene_t *scene, weapon_t *weapon, proj_forcer_t force);
  */
 void change_user_weapon(scene_t *scene);
 
+void scene_add_front(scene_t *scene, body_t *bod);
+
+void wipe_weapons(scene_t *scene);
+
+void rearm(scene_t *scene);
+
 /**
  * Allocates memory for an empty scene.
  * Makes a reasonable guess of the number of bodies to allocate space for.
