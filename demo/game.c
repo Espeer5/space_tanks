@@ -209,7 +209,7 @@ void emscripten_main(state_t *state) {
   sdl_render_scene(level_scene(state->level));
   level_tick(state -> level, time_since_last_tick());
   play_AI(state);
-  shoot_as_ai(state -> level, 2);
+  shoot_as_ai(state -> level, 1);
   body_cleanup(state);
 }
 

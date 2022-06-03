@@ -57,6 +57,7 @@ scene_t *scene_init_fixed_size(size_t nbodies, size_t nforces, size_t user_weapo
   new_scene -> user_weapons = list_init(user_weapons, (void *)free_weapon_node);
   assert(new_scene -> user_weapons != NULL);
   new_scene -> current_user_weapon = 0;
+  new_scene->enemy_weapons = list_init(user_weapons, (void *)free_weapon_node);
   return new_scene;
 }
 

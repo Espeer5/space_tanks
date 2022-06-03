@@ -75,14 +75,6 @@ const double ENEMY_FIRE_RATE_CONTROL =
 const size_t POSITION_APPROXIMATION_ORDER = 50;
 const double ANG_VAR = 0.1;
 
-
-/**
- * A generalization of scene to .
- * The level automatically resizes to store
- * arbitrarily many dynamic and force creators, but has a static
- * number of background objects, and a finite list of 
- * walls.
- */
 typedef struct level {
     scene_t *scene;
     list_t *dynamic_objs;
@@ -276,7 +268,7 @@ void shoot_as_ai(level_t *level, size_t enemy_num) {
     dt = sqrt(vec_dot(gap, gap)) / PROJECTILE_VELOCITY;                    
   }
   double angle = atan2(-gap.y, -gap.x);
-  angle += (rand() / RAND_MAX) * ANG_VAR;
+  angle += ((double) rand() / RAND_MAX) * ANG_VAR;
   body_set_rotation(scene_get_body(level_scene(level), enemy_num), angle + M_PI / 2);
   fire_enemy_weapon(scene, enemy_num);
 }
@@ -337,6 +329,7 @@ level_t *level_init_from_folder(char *path, double XMAX, double YMAX) {
         double dimple_angle = (2 * M_PI) / num_dimples;
         double angle = 0;
         for (size_t i = 0; i < num_dimples; i++){
+            dimples_radius = asteroid_radius * (rand() / RAND_MAX);
             dimple_x = dimple_center.x + (dimples_radius * cos(angle));
             dimple_y = dimple_center.y + (dimples_radius * sin(angle));
             // dimple_center = (vector_t) {dimple_x, dimple_y};
