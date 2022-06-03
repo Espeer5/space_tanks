@@ -64,10 +64,26 @@ void add_user_weapon(scene_t *scene, weapon_t *weapon, proj_forcer_t force);
  */
 void change_user_weapon(scene_t *scene);
 
+/**
+ * @brief Adds a body as the first index of the scene
+ * 
+ * @param scene 
+ * @param bod 
+ */
 void scene_add_front(scene_t *scene, body_t *bod);
 
+/**
+ * @brief Clears the list of user weapons out to allow it to be re-initialized
+ * 
+ * @param scene 
+ */
 void wipe_weapons(scene_t *scene);
 
+/**
+ * @brief Creates a new user weapon list for the scene
+ * 
+ * @param scene 
+ */
 void rearm(scene_t *scene);
 
 /**
@@ -94,6 +110,12 @@ body_t *fire_user_weapon(scene_t *scene);
  */
 size_t background_objs(scene_t *scene);
 
+/**
+ * @brief Get the proj force object associated with a certain weapon
+ * 
+ * @param scene 
+ * @return proj_forcer_t 
+ */
 proj_forcer_t get_proj_force(scene_t *scene);
 
 /**
@@ -113,7 +135,13 @@ background_obj_t *scene_get_background(scene_t *scene, size_t index);
  */
 void scene_add_background(scene_t *scene, list_t *polygon, rgb_color_t color);
 
-
+/**
+ * @brief Adds an enemy weapon to the scene with a given rojectile fired by a certain enemy
+ * 
+ * @param scene 
+ * @param weapon 
+ * @param force 
+ */
 void add_enemy_weapon(scene_t *scene, weapon_t* weapon, proj_forcer_t force);
 
 /**
@@ -187,6 +215,11 @@ void scene_add_bodies_force_creator(scene_t *scene, force_creator_t forcer,
                                     void *aux, list_t *bodies,
                                     free_func_t freer);
 
+/**
+ * @brief MCalculates all collisions and resulting forces needin to be factoed into the scene
+ * 
+ * @param scene 
+ */
 void scene_tick_forces(scene_t *scene);
 
 /**
@@ -199,7 +232,14 @@ void scene_tick_forces(scene_t *scene);
  */
 void generate_back_stars(scene_t *scene, size_t num_stars, double XMAX, double YMAX);
 
+/**
+ * @brief Moves all bodies in the scene forward in time once all forces on all objects has been calculated
+ * 
+ * @param scene 
+ * @param dt 
+ */
 void scene_tick_after_forces(scene_t *scene, double dt);
+
 /**
  * Executes a tick of a given scene over a small time interval.
  * This requires executing all the force creators

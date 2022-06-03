@@ -7,8 +7,13 @@
 #include <stdlib.h>
 #include <time.h>
 
-
+/**
+ * @brief Creates a square in the scene to be used in testing
+ * 
+ * @return list_t* 
+ */
 list_t *make_square();
+
 /**
  * @brief Generates a random double between the values of two passed in size_ts
  *
@@ -18,6 +23,12 @@ list_t *make_square();
  */
 double gen_rand(size_t lower, size_t upper);
 
+/**
+ * @brief Generates the graphics for single ship
+ * 
+ * @param origin 
+ * @return list_t* 
+ */
 list_t *ship_init(vector_t origin);
 
 /**
@@ -28,10 +39,32 @@ list_t *ship_init(vector_t origin);
  */
 rgb_color_t rand_color();
 
+/**
+ * @brief Creates a "dimple" or textural feature on an asteroid providing some extra graphics
+ * 
+ * @param center 
+ * @param radius 
+ * @return list_t* 
+ */
 list_t *dimple_init(vector_t center, double radius);
 
+/**
+ * @brief Generates a random vector where both x and y componenets are within the specified bounds
+ * 
+ * @param lower 
+ * @param upper 
+ * @return vector_t 
+ */
 vector_t rand_vec(size_t lower, size_t upper);
 
+/**
+ * @brief Creates the outline of an asteroid to be used in asteroid graphics
+ * 
+ * @param center 
+ * @param asteroid_radius 
+ * @param num_sides 
+ * @return list_t* 
+ */
 list_t *asteroid_outline_init(vector_t center, double asteroid_radius, double num_sides);
 
 /**

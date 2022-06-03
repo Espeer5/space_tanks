@@ -55,8 +55,20 @@ typedef void (*mouse_handler_t)(char button, key_event_type_t type, double mouse
  */
 void sdl_init(vector_t min, vector_t max);
 
+/**
+ * @brief Returns the current x position of the mouse
+ * 
+ * @param state 
+ * @return double 
+ */
 double mouse_x(state_t *state);
 
+/**
+ * @brief Returns the current y position of the mouse
+ * 
+ * @param state 
+ * @return double 
+ */
 double mouse_y(state_t *state);
 
 /**
@@ -123,6 +135,11 @@ void sdl_render_scene(scene_t *scene);
  */
 void sdl_on_key(key_handler_t handler);
 
+/**
+ * @brief Registers a function to be used in handling what happens when the mouse is clicked
+ * 
+ * @param mouse_handler 
+ */
 void sdl_on_click(mouse_handler_t mouse_handler);
 
 /**

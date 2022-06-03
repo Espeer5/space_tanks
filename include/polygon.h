@@ -46,6 +46,14 @@ void polygon_translate(list_t *polygon, vector_t translation);
  */
 void polygon_rotate(list_t *polygon, double angle, vector_t point);
 
+/**
+ * @brief Creates a star on the screen of the given pointedness, at the given center, and with the given major radius.
+ * 
+ * @param number_points 
+ * @param center 
+ * @param star_radius 
+ * @return list_t* 
+ */
 list_t *star_init(size_t number_points, vector_t center, double star_radius);
 
 #endif // #ifndef __POLYGON_H__
