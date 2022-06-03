@@ -209,7 +209,7 @@ Module['FS_createPath']("/levels", "level4", true, true);
     }
 
     }
-    loadPackage({"files": [{"filename": "/levels/level5/rocks.dat", "start": 0, "end": 140}, {"filename": "/levels/level5/enemy.dat", "start": 140, "end": 186}, {"filename": "/levels/level1/rocks.dat", "start": 186, "end": 280}, {"filename": "/levels/level1/enemy.dat", "start": 280, "end": 326}, {"filename": "/levels/level2/rocks.dat", "start": 326, "end": 451}, {"filename": "/levels/level2/enemy.dat", "start": 451, "end": 497}, {"filename": "/levels/level3/rocks.dat", "start": 497, "end": 627}, {"filename": "/levels/level3/enemy.dat", "start": 627, "end": 673}, {"filename": "/levels/level4/rocks.dat", "start": 673, "end": 802}, {"filename": "/levels/level4/enemy.dat", "start": 802, "end": 848}], "remote_package_size": 848, "package_uuid": "66750d2d-d575-4dec-bdc5-288081868865"});
+    loadPackage({"files": [{"filename": "/levels/level5/rocks.dat", "start": 0, "end": 140}, {"filename": "/levels/level5/enemy.dat", "start": 140, "end": 186}, {"filename": "/levels/level1/rocks.dat", "start": 186, "end": 280}, {"filename": "/levels/level1/enemy.dat", "start": 280, "end": 326}, {"filename": "/levels/level2/rocks.dat", "start": 326, "end": 451}, {"filename": "/levels/level2/enemy.dat", "start": 451, "end": 497}, {"filename": "/levels/level3/rocks.dat", "start": 497, "end": 627}, {"filename": "/levels/level3/enemy.dat", "start": 627, "end": 673}, {"filename": "/levels/level4/rocks.dat", "start": 673, "end": 802}, {"filename": "/levels/level4/enemy.dat", "start": 802, "end": 848}], "remote_package_size": 848, "package_uuid": "ded3ec50-6890-4f61-a119-ea07b5dd8884"});
 
   })();
 
@@ -8739,6 +8739,15 @@ var ASM_CONSTS = {
       setTempRet0(val);
     }
 
+  function _time(ptr) {
+      ;
+      var ret = (Date.now()/1000)|0;
+      if (ptr) {
+        HEAP32[((ptr)>>2)] = ret;
+      }
+      return ret;
+    }
+
 Module["requestFullscreen"] = function Module_requestFullscreen(lockPointer, resizeCanvas) { Browser.requestFullscreen(lockPointer, resizeCanvas) };
   Module["requestFullScreen"] = function Module_requestFullScreen() { Browser.requestFullScreen() };
   Module["requestAnimationFrame"] = function Module_requestAnimationFrame(func) { Browser.requestAnimationFrame(func) };
@@ -9269,7 +9278,8 @@ var asmLibraryArg = {
   "fd_seek": _fd_seek,
   "fd_write": _fd_write,
   "gettimeofday": _gettimeofday,
-  "setTempRet0": _setTempRet0
+  "setTempRet0": _setTempRet0,
+  "time": _time
 };
 var asm = createWasm();
 /** @type {function(...*):?} */

@@ -32,8 +32,8 @@ const size_t UFO_ROWS = 1;
 const double SHIP_MASS = 2;
 const rgb_color_t SHIP_COLOR = {0, 0, 1};
 const double UFO_VELO = 300;
-const double PROJECTILE_MASS = 5;
-const double ASTEROID_MASS = 1;
+const double PROJECTILE_MASS = .1;
+const double ASTEROID_MASS = 20;
 const rgb_color_t PROJECTILE_COLOR = {0, 1, 0};
 const double PROJECTILE_VELOCITY = 1000;
 const size_t NUM_ENEMIES = 5;
@@ -82,17 +82,12 @@ typedef struct level {
     body_t *user;
     key_handler_t *key_handle;
     mouse_handler_t *mouse_handle;
-    //size_t num_enemies;
 } level_t;
 
 
 scene_t *level_scene(level_t *level) {
     return level->scene;
 }
-/*
-size_t num_enemies(level_t *level) {
-    return level->num_enemies;
-}*/
 
 size_t level_rocks(level_t *level) {
     return list_size(level -> rocks);
@@ -232,6 +227,7 @@ FILE *helper_get_data(char*path, char* file_name) {
     return file;
 }
 
+
 list_t *projectile_init(vector_t base) {
   list_t *projectile = list_init(4, free);
   vector_t *vert1 = malloc(sizeof(vector_t));
@@ -272,6 +268,10 @@ void shoot_as_ai(level_t *level, size_t enemy_num) {
   body_set_rotation(scene_get_body(level_scene(level), enemy_num), angle - M_PI / 2);
   body_t *en_proj = fire_enemy_weapon(scene, enemy_num);
   create_destructive_collision(level_scene(level), scene_get_body(level_scene(level), 0), en_proj);
+  for(size_t t = 0; t < scene_bodies(level_scene(level)); t++) {
+        body_t *rock = scene_get_body(level_scene(level), t);
+        create_physics_collision(level_scene(level), .7, en_proj, rock);
+  }
 }
 
 level_t *level_init_from_folder(char *path, double XMAX, double YMAX) {
@@ -284,7 +284,6 @@ level_t *level_init_from_folder(char *path, double XMAX, double YMAX) {
     FILE *rocks_file = helper_get_data(path, "/rocks.dat");
     strarray *info = get_split_line_from_file(enemy_file);
     size_t num_ships = atoi(info->data[0]) + 1;
-    //level->num_enemies = num_ships - 1;
     size_t num_dynamic = num_ships * (1 + MAX_PROJ_PER_SHIP);
     level->dynamic_objs = list_init(num_dynamic, NULL);
     free_strarray(info);
@@ -346,9 +345,6 @@ level_t *level_init_from_folder(char *path, double XMAX, double YMAX) {
     free_strarray(info);
     for(size_t t = 0; t < list_size(level -> rocks); t++) {
         body_t *rock = list_get(level -> rocks, t);
-        for(size_t l = 0; l < list_size(level -> dynamic_objs); l++) {
-            create_destructive_collision(level -> scene, rock, list_get(level -> dynamic_objs, l));
-        }
         for(size_t x = 0; x < list_size(level -> rocks); x++) {
             if(x != t) {
                 create_physics_collision(level -> scene, .8, rock, list_get(level -> rocks, x));
@@ -380,7 +376,6 @@ list_t *level_predict(level_t *level, list_t *extras, size_t nsteps, double dt) 
 }
 
 void level_tick(level_t *level, double dt) {
-    //printf("%lu", level->num_enemies);
     scene_tick_forces(level->scene);
     size_t naliens = 0;
     for (size_t i = 0; i < scene_bodies(level->scene); i++) {
@@ -388,7 +383,6 @@ void level_tick(level_t *level, double dt) {
                     "alien")) {
             if (body_is_removed(scene_get_body(level->scene, i))) {
                 remove_enemy_weapon(level_scene(level), naliens);
-                //level->num_enemies--;
             }
             naliens++;
         }

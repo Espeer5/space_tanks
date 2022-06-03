@@ -155,7 +155,6 @@ void dodge(state_t *state, body_t *enemy) {
     // Maybe need a sense of urgency?
     velo = vec_multiply(1 / vmag, velo);
     if (vec_dot(velo, gap) > 0) { // object approaching
-      double gmag = sqrt(vec_dot(gap, gap));
       // Get perpendicular component
       vector_t closest = vec_subtract(gap, vec_multiply(vec_dot(velo, gap), velo));
       total_push = vec_add(total_push, vec_multiply(vmag, scale_flee(closest)));
@@ -175,7 +174,7 @@ void play_AI(state_t *state) {
     if (!strcmp((char *)body_get_info(scene_get_body(scene, i)),
                     "alien")) {
       dodge(state, scene_get_body(scene, i));
-      if (rand() > RAND_MAX * 0.98) {
+      if (gen_rand(0, 1000) > 995) {
         shoot_as_ai(state->level, counter);
       }
       counter++;
@@ -183,12 +182,24 @@ void play_AI(state_t *state) {
   }
 }
 
+double loop_position(double position, double min, double max) {
+  // Note: this doesn't account for going way out of bounds by multiple times
+  if (position < min) {
+    return position + (max - min);
+  }
+  if (position > max) {
+    return position - (max - min);
+  }
+  return position;
+}
+
 state_t *emscripten_init() {
+  seed_random();
   vector_t min = (vector_t){0, 0};
   vector_t max = (vector_t){XMAX, YMAX};
   sdl_init(min, max);
   state_t *state = malloc(sizeof(state_t));
-  state -> level = level_init_from_folder("/levels/level3", XMAX, YMAX);
+  state -> level = level_init_from_folder("/levels/level4", XMAX, YMAX);
   state -> current_level = (size_t) 1;
   state -> current_score = 0;
   printf("Welcome to Space Force, The Game!\nControls:\n   Click to rotate and shoot\n   Space: Quick fire\n   Arrow Keys: Maneuver Ship\n   Number keys 1-3: Change weapons\n   S: Check score\n\n Current Score: %zu\n", (size_t) get_score(state));
@@ -214,7 +225,10 @@ void emscripten_main(state_t *state) {
   sdl_render_scene(level_scene(state->level));
   level_tick(state -> level, time_since_last_tick());
   play_AI(state);
-  //shoot_as_ai(state->level, 1);
+  vector_t ship_position = body_get_centroid(scene_get_body(level_scene(state -> level), 0));
+  ship_position.x = loop_position(ship_position.x, 0, XMAX);
+  ship_position.y = loop_position(ship_position.y, 0, YMAX);
+  body_set_centroid(scene_get_body(level_scene(state -> level), 0), (vector_t) {ship_position.x, ship_position.y});
   body_cleanup(state);
 }
 
