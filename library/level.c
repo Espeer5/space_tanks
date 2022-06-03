@@ -82,17 +82,17 @@ typedef struct level {
     body_t *user;
     key_handler_t *key_handle;
     mouse_handler_t *mouse_handle;
+    //size_t num_enemies;
 } level_t;
 
 
 scene_t *level_scene(level_t *level) {
     return level->scene;
 }
-
-void free_traj(trajectory_t *traj) {
-    list_free(traj->positions);
-    free(traj);
-}
+/*
+size_t num_enemies(level_t *level) {
+    return level->num_enemies;
+}*/
 
 size_t level_rocks(level_t *level) {
     return list_size(level -> rocks);
@@ -283,6 +283,7 @@ level_t *level_init_from_folder(char *path, double XMAX, double YMAX) {
     FILE *rocks_file = helper_get_data(path, "/rocks.dat");
     strarray *info = get_split_line_from_file(enemy_file);
     size_t num_ships = atoi(info->data[0]) + 1;
+    //level->num_enemies = num_ships - 1;
     size_t num_dynamic = num_ships * (1 + MAX_PROJ_PER_SHIP);
     level->dynamic_objs = list_init(num_dynamic, NULL);
     free_strarray(info);
@@ -329,7 +330,7 @@ level_t *level_init_from_folder(char *path, double XMAX, double YMAX) {
         double dimple_angle = (2 * M_PI) / num_dimples;
         double angle = 0;
         for (size_t i = 0; i < num_dimples; i++){
-            dimples_radius = asteroid_radius * (rand() / RAND_MAX);
+            dimples_radius = asteroid_radius * ((double) rand() / RAND_MAX);
             dimple_x = dimple_center.x + (dimples_radius * cos(angle));
             dimple_y = dimple_center.y + (dimples_radius * sin(angle));
             // dimple_center = (vector_t) {dimple_x, dimple_y};
@@ -378,6 +379,18 @@ list_t *level_predict(level_t *level, list_t *extras, size_t nsteps, double dt) 
 }
 
 void level_tick(level_t *level, double dt) {
+    //printf("%lu", level->num_enemies);
     scene_tick_forces(level->scene);
+    size_t naliens = 0;
+    for (size_t i = 0; i < scene_bodies(level->scene); i++) {
+        if (!strcmp((char *)body_get_info(scene_get_body(level->scene, i)),
+                    "alien")) {
+            if (body_is_removed(scene_get_body(level->scene, i))) {
+                remove_enemy_weapon(level_scene(level), naliens);
+                //level->num_enemies--;
+            }
+            naliens++;
+        }
+    }
     scene_tick_after_forces(level->scene, dt);
 }

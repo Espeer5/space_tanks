@@ -169,11 +169,16 @@ void dodge(state_t *state, body_t *enemy) {
 }
 
 void play_AI(state_t *state) {
+  size_t counter = 1;
   for (size_t i = 0; i < level_bodies(state->level); i++) {
     scene_t *scene = level_scene(state->level);
     if (!strcmp((char *)body_get_info(scene_get_body(scene, i)),
                     "alien")) {
       dodge(state, scene_get_body(scene, i));
+      if (rand() > RAND_MAX * 0.98) {
+        shoot_as_ai(state->level, counter);
+      }
+      counter++;
     }
   }
 }
@@ -209,7 +214,7 @@ void emscripten_main(state_t *state) {
   sdl_render_scene(level_scene(state->level));
   level_tick(state -> level, time_since_last_tick());
   play_AI(state);
-  shoot_as_ai(state -> level, 1);
+  //shoot_as_ai(state->level, 1);
   body_cleanup(state);
 }
 

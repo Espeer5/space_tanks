@@ -136,7 +136,7 @@ void body_set_centroid(body_t *body, vector_t x) {
 void body_set_velocity(body_t *body, vector_t v) { body->velocity = v; }
 
 void body_set_rotation(body_t *body, double angle) {
-  printf("%zu\n", list_size(body -> shapes));
+  //printf("%zu\n", list_size(body -> shapes));
   for(size_t i = 0; i < list_size(body -> shapes); i++) {
   polygon_rotate(((shape_node_t *)list_get(body->shapes, i)) -> shape, angle - body->angle, body->centroid);
   }

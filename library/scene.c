@@ -33,6 +33,10 @@ weapon_node_t *gen_node(weapon_t *weapon, proj_forcer_t force) {
   return new_node;
 }
 
+void remove_enemy_weapon(scene_t *scene, size_t index) {
+  list_remove(scene->enemy_weapons, index);
+}
+
 void free_weapon_node(weapon_node_t *weapon_node) {
   free_weapon(weapon_node -> weapon);
   free(weapon_node);

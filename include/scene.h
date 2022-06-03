@@ -41,6 +41,14 @@ typedef void (*proj_forcer_t)(scene_t *scene, body_t *bod1, body_t *bod2);
 scene_t *scene_init_fixed_size(size_t nbodies, size_t nforces, size_t user_weapons, size_t background_objs);
 
 /**
+ * @brief Removes the index'th enemy weapon
+ * 
+ * @param scene scene to remove weapon from
+ * @param index index to remove at
+ */
+void remove_enemy_weapon(scene_t *scene, size_t index);
+
+/**
  * @brief Adds a weapon tot he scene for use by the user
  * 
  * @param scene 

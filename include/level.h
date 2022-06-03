@@ -17,16 +17,7 @@
  */
 typedef struct level level_t;
 
-typedef struct trajectory {
-    body_t *body;
-    list_t *positions;
-} trajectory_t;
-
-/**
- * Frees a trajectory pointer and the contained list (but not the body)
- * @param traj pointer to trajectory object to free
- */
-void free_traj(trajectory_t *traj);
+size_t num_enemies(level_t *level);
 
 size_t level_rocks(level_t *level);
 
@@ -83,18 +74,6 @@ level_t *get_asteroid_info(char *path);
  * @param body a pointer to the body to add to the scene
  */
 void level_add_dynamic_body(level_t *level, body_t *body);
-
-/**
- * Predicts the positions of all dynamic bodies in the level, along
- * with extra bodies that can be specified.
- * @param level the level to simulate in
- * @param extras additional bodies not in the scene to simulate
- * @param nsteps the number of steps ahead to simulate
- * @param dt time step between each simulated step
- * @return a list_t* containing trajectory_t objects for each dynamic body
- */
-list_t *level_predict(level_t *level, list_t *extras,
-                        size_t nsteps, double dt);
 
 /**
  * Executes a tick of a given level over a small time interval.
