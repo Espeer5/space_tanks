@@ -16,7 +16,6 @@
  */
 
 vector_t make_axis(vector_t vector) {
-
   return vec_multiply(1 / sqrt(vec_dot(vector, vector)),
                       vec_rotate(vector, M_PI / 2));
 }

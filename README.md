@@ -55,7 +55,6 @@ Game!!
 **RESOURCES USED:** Lots of Desmos
 
 ## Sunday May 22 9:00 - 11:00 AM
-
 **WHO:** Eddie and Jack
 
 **WHAT:** Fixing the mouse control bug with arctrig
@@ -74,7 +73,6 @@ Game!!
 **RESOURCES USED:** Edward Speer. 
 
 ## Monday May 23 11:00 - 3:00 PM
-
 **WHO:** Jack and Eddie
 
 **WHAT:** Created a struct for different weapons that create different projectile types with different force creators for the game, and making body be represented by a list of polygons instead of one polygon
@@ -83,7 +81,7 @@ Game!!
 
 **RESOURCES USED:** None
 
-## Sunday May May 24 8:00 pm - 12:00 am
+## Tuesday May 24 8:00 pm - 12:00 am
 **WHO:** Ryan
 
 **WHAT:** Used Eddie's struct implementation to create sprites so that the asteroids can have dimples to add more detail to the level design. 
@@ -91,6 +89,26 @@ Game!!
 **BUGS:** Out of order code. 
 
 **RESOURCES USED:** Edward Speer.
+
+## Tuesday May 24 8:00 PM - !2:00 AM
+**WHO:** Edward
+
+**WHAT:** Designed and added the weapons to be used by the ship in the game
+
+**BUGS:** None
+
+**RESOURCES USED:** None
+
+## Wednesday May 25 2:00 - 5:00 PM
+**WHO:** Edward
+
+**WHAT:** Began building demo for actual game in order to set up for win/loss conditions to be added
+
+**BUGS:** There are very strange memory issues happening with level_t
+
+**RESOURCES USED:** sdl documentation for key handling
+
+
 
 ## Thursday May 26 3:00 pm - 6:00 pm
 **WHO:** Eli
@@ -101,6 +119,7 @@ Game!!
 
 **RESOURCES USED:** None.
 
+
 ## Sunday May May 24 6:00 pm - 11:00 pm
 **WHO:** Ryan
 
@@ -109,6 +128,15 @@ Game!!
 **BUGS:** Out of order code. 
 
 **RESOURCES USED:** Edward Speer.
+
+## Monday May 29 5:00 - 7:00 PM
+**WHO:** Edward
+
+**WHAT:** Added game messages in the terminal detailing controls, score, and pieces of game state for the user over the course of the game demo
+
+**BUGS:** None
+
+**RESOURCES USED:** None
 
 ## Thursday June 2 12:00 pm - 8:00 pm 
 **WHO:** Eli
@@ -125,6 +153,15 @@ Game!!
 **WHAT:** Implemented win/loss conditions. Created message for losing, if you beat all levels you get an extra life. 
 
 **BUGS:** None. 
+
+**RESOURCES USED:** None
+
+## Friday June 3 9:00 - 11:00 AM
+**WHO:** Edward
+
+**WHAT:** Implemented extra lives, a score tracker, and finished key handling. Killed magic numbers and used procedural decomp where sdl would allow me to without freaking out
+
+**BUGS:** If procedural decomp is attempted on level_init_from_folder, the entire memory of the entire program freaks out
 
 **RESOURCES USED:** None
 

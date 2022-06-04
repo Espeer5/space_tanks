@@ -5,6 +5,8 @@
 #include <stdlib.h>
 #include "weapon.h"
 
+const size_t STARTING_ITEMS = 5;
+
 typedef struct scene {
   list_t *bodies;
   list_t *force_creators;
@@ -66,7 +68,7 @@ scene_t *scene_init_fixed_size(size_t nbodies, size_t nforces, size_t user_weapo
 }
 
 scene_t *scene_init(void) {
-  return scene_init_fixed_size(5, 5, 5, 5);
+  return scene_init_fixed_size(STARTING_ITEMS, STARTING_ITEMS, STARTING_ITEMS, STARTING_ITEMS);
 }
 
 void free_auxes(scene_t *scene) {

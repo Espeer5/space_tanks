@@ -4,6 +4,9 @@
 #include <string.h>
 
 const double PROJ_OFFSET = 25;
+const double PROJ_HITBOX_WIDTH = 10;
+const double PROJ_HITBOX_HEIGHT = 9;
+const rgb_color_t PROJ_HITBOX_COL = {0, 0, 0};
 
 typedef struct weapon {
   draw_proj_t draw_proj;
@@ -54,7 +57,7 @@ body_t *gen_projectile(weapon_t *weapon) {
   char *info = malloc(11 * sizeof(char));
   strcpy(info, "projectile");
   list_t *proj_graph = (weapon -> draw_proj)((vector_t) {body_get_centroid(weapon -> source).x + (PROJ_OFFSET * cos(body_get_angle(weapon -> source) + (M_PI / 2))), body_get_centroid(weapon -> source).y + (PROJ_OFFSET * sin(body_get_angle(weapon -> source) + (M_PI / 2)))});
-  body_t *proj = body_init_with_info(proj_box_init((vector_t) {body_get_centroid(weapon -> source).x + (PROJ_OFFSET * cos(body_get_angle(weapon -> source) + (M_PI / 2))), body_get_centroid(weapon -> source).y + (PROJ_OFFSET * sin(body_get_angle(weapon -> source) + (M_PI / 2)))}, 10, 9), weapon -> proj_mass, (rgb_color_t) {0, 0, 0}, info, free);
+  body_t *proj = body_init_with_info(proj_box_init((vector_t) {body_get_centroid(weapon -> source).x + (PROJ_OFFSET * cos(body_get_angle(weapon -> source) + (M_PI / 2))), body_get_centroid(weapon -> source).y + (PROJ_OFFSET * sin(body_get_angle(weapon -> source) + (M_PI / 2)))}, PROJ_HITBOX_WIDTH, PROJ_HITBOX_HEIGHT), weapon -> proj_mass, PROJ_HITBOX_COL, info, free);
   body_add_shape(proj, proj_graph, weapon -> proj_color);
   body_set_rotation(proj, body_get_angle(weapon -> source));
   body_set_velocity(proj, (vector_t) {(weapon -> proj_velo) * cos(body_get_angle(weapon -> source) + (M_PI / 2)), (weapon -> proj_velo) * sin(body_get_angle(weapon -> source) + (M_PI / 2))});

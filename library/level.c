@@ -14,51 +14,22 @@
 
 const int MAX_LINE_LENGTH = 100;
 const int MAX_PROJ_PER_SHIP = 4;
-const vector_t ship_pos = {50, 50};
-const double STAR_RADIUS = 85;
-const size_t STAR_POINTS = 5;
-const double RED = 0;
 const size_t CAN_POINTS = 50;
 const double CAN_RAD = 20;
 const double CAN_MASS = 50;
 const double CAN_VELO = 420;
-const double GREEN = .1;
-const double BLUE = 1;
-const rgb_color_t color = {0, .1, .1};
 const vector_t START = {250, 500};
-const vector_t initial_velo = {300, -200};
-const double omega = .05;
 const size_t shape_steps = 200;
-const double UFO_MASS = 2;
-const rgb_color_t UFO_COLOR = {1, 0, 0};
-const size_t UFO_COLUMNS = 4;
-const size_t UFO_ROWS = 1;
 const double SHIP_MASS = 2;
 const rgb_color_t SHIP_COLOR = {0, 0, 1};
-const double UFO_VELO = 300;
 const double PROJECTILE_MASS = .1;
 const double ASTEROID_MASS = 20;
 const rgb_color_t PROJECTILE_COLOR = {0, 1, 0};
 const double PROJECTILE_VELOCITY = 1000;
-const size_t NUM_ENEMIES = 5;
 const double PROJECTILE_OFFSET =
     9; // How far from a body does its projectile spawn
 const double PROJECTILE_WIDTH = 6;
-const double UFO_WIDTH = 80;
 const double SHIP_WIDTH = 80;
-const double UFO_BUBBLE_UPPER_BOUND = 8.801;
-const double UFO_BUBBLE_WIDTH_CONSTANT = 3e8;
-const double UFO_SAUCER_WIDTH_CONSTANT = 300;
-const double UFO_LOWER_SAUCER_UPPER_BOUND = 14.618;
-const double UFO_LOWER_SAUCER_HEIGHT = 13.653;
-const double UFO_LOWER_SAUCER_WIDTH_CONSTANT = 10e18;
-const double UFO_LOWER_OFFSET = 18;
-const double UFO_UPPER_OFFSET = 20;
-const double UFO_WEAPON_WIDTH_CONSTANT = 3;
-const double UFO_WEAPON_OFFSET = 27;
-const double UFO_DOWN_TRANSLATION = 200;
-const double UFO_SPACING = 100;
-const double UFO_WEAPON_BOUND = 3;
 const double SHIP_COCKPIT_BOUND = 6.961;
 const double SHIP_COCKPIT_WIDTH_CONSTANT = 100;
 const double SHIP_WEAPON_BOUND = 21.579;
@@ -71,13 +42,18 @@ const double SHIP_WING_SLANT_BOUND = 5.6;
 const double SHIP_WING_SLANT_OUTER_BOUND = 28;
 const double SHIP_AIR_FOIL_WIDTH_CONSTANT = .25;
 const double SHIP_AIRFOIL_OFFSET = 7;
-const double UFO_WIDTH_SPACING = 70;
-const double UFO_HEIGHT = 60;
 const double ENEMY_FIRE_RATE_RAND_MAX = 1000;
 const double ENEMY_FIRE_RATE_CONTROL =
-    400; // Lower number to fire less frequently, higher to fire more frequenctly
+    990; // Lower number to fire less frequently, higher to fire more frequenctly
 const size_t POSITION_APPROXIMATION_ORDER = 50;
 const double ANG_VAR = 0.1;
+const rgb_color_t HITBOX_COL = {0, 0, 0};
+const double ENEMY_SHOT_ELASTICITY = .7;
+const double SHUR_SIDES = 6;
+const double SHUR_RAD = 10;
+const double SHIP_HITBOX_SCALE = 1.5;
+const rgb_color_t ENEMY_COLOR = {1, 0, 0};
+const double USER_WEAPON_ELASTICITY = .8;
 
 typedef struct level {
     scene_t *scene;
@@ -172,7 +148,7 @@ body_t *get_bodies_from_array(strarray *arr) {
     char *info = malloc(6 * sizeof(char));
     strcpy(info, "alien");
     list_t *bod_graphics = ship_init((vector_t) {(double) atoi(arr -> data[0]), (double) atoi(arr -> data[1])});
-    body_t *enemy = body_init_with_info(box_init((vector_t) {(double) atoi(arr -> data[0]), (double) atoi(arr -> data[1])}, SHIP_WIDTH/1.5, SHIP_WIDTH/1.5), SHIP_MASS, (rgb_color_t) {0, 0, 0}, info, free);
+    body_t *enemy = body_init_with_info(box_init((vector_t) {(double) atoi(arr -> data[0]), (double) atoi(arr -> data[1])}, SHIP_WIDTH/1.5, SHIP_WIDTH/1.5), SHIP_MASS, HITBOX_COL, info, free);
     body_add_shape(enemy, bod_graphics, (rgb_color_t) {1, 0, 0});
     return enemy;
  }
@@ -251,30 +227,30 @@ void shoot_as_ai(level_t *level, size_t enemy_num) {
   create_destructive_collision(level_scene(level), scene_get_body(level_scene(level), 0), en_proj);
   for(size_t t = 0; t < scene_bodies(level_scene(level)); t++) {
         body_t *rock = scene_get_body(level_scene(level), t);
-        create_physics_collision(level_scene(level), .7, en_proj, rock);
+        create_physics_collision(level_scene(level), ENEMY_SHOT_ELASTICITY, en_proj, rock);
   }
 }
 
 list_t *shuriken_init(vector_t center) {
-  double d_angle = (M_PI / 6);
+  double d_angle = (M_PI / SHUR_SIDES);
   double total_angle = 0;
   size_t counter = 2;
-  double scaler = sin(M_PI / (2 * 6)) /
-                  sin(((6 - 3) * M_PI) / 6);
-  list_t *star = list_init(2 * 6, free);
-  for (size_t i = 0; i < 2 * 6; i++) {
+  double scaler = sin(M_PI / (2 * SHUR_SIDES)) /
+                  sin(((SHUR_SIDES - 3) * M_PI) / SHUR_SIDES);
+  list_t *star = list_init(2 * SHUR_SIDES, free);
+  for (size_t i = 0; i < 2 * SHUR_SIDES; i++) {
     total_angle = total_angle + d_angle;
     vector_t *new_vec_pointer = malloc(sizeof(vector_t));
     assert(new_vec_pointer != NULL);
     if (counter % 2) {
       *new_vec_pointer =
-          (vector_t){center.x - (10 * scaler * cos(total_angle)),
-                     center.y - (10 * scaler * sin(total_angle))};
+          (vector_t){center.x - (SHUR_RAD * scaler * cos(total_angle)),
+                     center.y - (SHUR_RAD * scaler * sin(total_angle))};
 
     } else {
       *new_vec_pointer =
-          (vector_t){center.x - (10 * cos(total_angle)),
-                     center.y - (10 * sin(total_angle))};
+          (vector_t){center.x - (SHUR_RAD * cos(total_angle)),
+                     center.y - (SHUR_RAD * sin(total_angle))};
     }
     list_add(star, new_vec_pointer);
     counter++;
@@ -298,7 +274,7 @@ void int_ship(level_t *level) {
     list_t *user_ship = ship_init(START);
     char *info1 = malloc(5 * sizeof(char));
     strcpy(info1, "ship");
-    body_t *user_bod = body_init_with_info(box_init(START, SHIP_WIDTH/1.5, SHIP_WIDTH/1.5), SHIP_MASS, (rgb_color_t) {0, 0, 0}, info1, free);
+    body_t *user_bod = body_init_with_info(box_init(START, SHIP_WIDTH/SHIP_HITBOX_SCALE, SHIP_WIDTH/SHIP_HITBOX_SCALE), SHIP_MASS, HITBOX_COL, info1, free);
     body_add_shape(user_bod, user_ship, SHIP_COLOR);
     level -> user = user_bod;
     scene_add_front(level -> scene, user_bod);
@@ -311,7 +287,7 @@ void int_ship(level_t *level) {
     add_user_weapon(level -> scene, weapon2, create_destructive_collision);
     add_user_weapon(level -> scene, weapon3, create_destructive_collision);
     for(size_t j = 0; j < scene_bodies(level -> scene); j++) {
-        create_physics_collision(level -> scene, .8, user_bod, scene_get_body(level -> scene, j));
+        create_physics_collision(level -> scene, USER_WEAPON_ELASTICITY, user_bod, scene_get_body(level -> scene, j));
     }
 }
 
@@ -320,7 +296,7 @@ level_t *level_init_from_folder(char *path, double XMAX, double YMAX) {
     list_t *user_ship = ship_init(START);
     char *info1 = malloc(5 * sizeof(char));
     strcpy(info1, "ship");
-    body_t *user_bod = body_init_with_info(box_init(START, SHIP_WIDTH/1.5, SHIP_WIDTH/1.5), SHIP_MASS, (rgb_color_t) {0, 0, 0}, info1, free);
+    body_t *user_bod = body_init_with_info(box_init(START, SHIP_WIDTH/SHIP_HITBOX_SCALE, SHIP_WIDTH/SHIP_HITBOX_SCALE), SHIP_MASS, HITBOX_COL, info1, free);
     body_add_shape(user_bod, user_ship, SHIP_COLOR);
     level -> user = user_bod;
     FILE *enemy_file = helper_get_data(path, "/enemy.dat");
@@ -347,7 +323,7 @@ level_t *level_init_from_folder(char *path, double XMAX, double YMAX) {
          info = get_split_line_from_file(enemy_file);
          body_t *new_body = get_bodies_from_array(info);
          scene_add_body(level->scene, new_body);
-         weapon_t *w = weapon_init((void *)projectile_init, PROJECTILE_VELOCITY, (rgb_color_t) {1, 0, 0}, PROJECTILE_MASS, new_body);
+         weapon_t *w = weapon_init((void *)projectile_init, PROJECTILE_VELOCITY, ENEMY_COLOR, PROJECTILE_MASS, new_body);
          add_enemy_weapon(level_scene(level), w, create_destructive_collision);
          list_add(level->dynamic_objs, (void *) new_body);
          free_strarray(info);

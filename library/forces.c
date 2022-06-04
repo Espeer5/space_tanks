@@ -226,28 +226,6 @@ vector_t get_impulse(body_t *body1, body_t *body2, vector_t axis,
 }
 
 void applied_impulse(body_t *body1, body_t *body2, vector_t axis, void *aux) {
-  /*
-  double ma = body_get_mass(body1);
-  double mb = body_get_mass(body2);
-  double reduced_mass = 0;
-  double elasticity = *(double *)aux;
-  double ub = vec_dot(body_get_velocity(body2), axis);
-  double ua = vec_dot(body_get_velocity(body1), axis);
-  double jn = 0;
-  vector_t impulse;
-  if (ma == INFINITY){
-    reduced_mass = mb;
-  }
-  if (mb == INFINITY) {
-    reduced_mass = ma;
-  }
-  if (reduced_mass == 0){
-    reduced_mass = ((ma * mb)/(ma + mb));
-  }
-  jn = (reduced_mass)*(1 + elasticity)*(ub - ua);
-  impulse = vec_multiply(jn, axis);
-  body_add_impulse(body1, impulse);
-  body_add_impulse(body2, vec_negate(impulse));*/
   double elasticity = *(double *)aux;
   vector_t impulse = get_impulse(body1, body2, axis, elasticity);
   body_add_impulse(body1, impulse);
